@@ -42,6 +42,8 @@ const authController = {
       
             res.status(200).json({
               id: response.id,
+              name: response.name,
+              email: response.email,
             });
           } catch (error) {
             if(error instanceof ErrorStatus){
