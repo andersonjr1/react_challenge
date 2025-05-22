@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import InputField from "../components/InputField"; // Adjust path if necessary
 import styles from "./LoginPage.module.css"; // Import CSS Module
+import { Link } from "react-router";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -45,7 +46,7 @@ const LoginPage: React.FC = () => {
       </form>
       <div className={styles.createAccountLink}>
         <p>
-          Não tem uma conta? <a href="/register">Criar Conta</a>
+          Não tem uma conta? <Link to="/register">Criar Conta</Link>
         </p>
       </div>
     </div>

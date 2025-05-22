@@ -1,6 +1,7 @@
 import "./App.css";
 import { Routes, Route, Link } from "react-router";
 import LoginPage from "./pages/LoginPage"; // Assuming LoginPage.tsx is in src/pages/
+import RegistrationPage from "./pages/RegistrationPage"; // Import the new page
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       {/* You can add a common navigation bar here if needed */}
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegistrationPage />} />
         <Route
           path="/"
           element={

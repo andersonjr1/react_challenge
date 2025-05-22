@@ -1,0 +1,50 @@
+.registrationContainer {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.registrationForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.registerButton {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #28a745; /* Green color for register */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px; /* Added some margin for spacing */
+}
+
+.registerButton:hover {
+  background-color: #218838;
+}
+
+.loginLink {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.loginLink a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.loginLink a:hover {
+  text-decoration: underline;
+}
