@@ -1,7 +1,16 @@
 import React, { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router"; // Corrected Link import
-import InputField from "../components/InputField"; // Adjust path if necessary
-import styles from "./LoginPage.module.css"; // Import CSS Module
+import { useNavigate, Link as RouterLink } from "react-router"; // Renamed Link to avoid conflict
+import {
+  Container,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+  Alert,
+  Link as MuiLink, // MUI Link
+  Grid,
+} from "@mui/material";
 import { UserContext } from "../contexts/UserContext"; // Import UserContext
 
 const LoginPage: React.FC = () => {
@@ -48,46 +57,82 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <h2 className={styles.title}>Login</h2>
-      <form onSubmit={handleLoginSubmit} className={styles.loginForm}>
-        <InputField
-          label="E-mail"
-          type="email"
-          id="email"
-          name="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="seuemail@exemplo.com"
-          required
-          autoComplete="email"
-        />
-        <InputField
-          label="Senha"
-          type="password"
-          id="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Sua senha"
-          required
-          autoComplete="current-password"
-        />
-        {error && <p className={styles.errorMessage}>{error}</p>}
-        <button
-          type="submit"
-          className={styles.loginButton}
-          disabled={isLoading}
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Login
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleLoginSubmit}
+          noValidate
+          sx={{ mt: 1 }}
         >
-          {isLoading ? "Entrando..." : "Entrar"}
-        </button>
-      </form>
-      <div className={styles.createAccountLink}>
-        <p>
-          Não tem uma conta? <Link to="/register">Criar Conta</Link>
-        </p>
-      </div>
-    </div>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="E-mail"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!error && error.toLowerCase().includes("email")} // Example: highlight if error mentions email
+            helperText={
+              !!error && error.toLowerCase().includes("email") ? error : ""
+            }
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Senha"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={!!error && error.toLowerCase().includes("senha")} // Example: highlight if error mentions password
+            helperText={
+              !!error && error.toLowerCase().includes("senha") ? error : ""
+            }
+          />
+          {error &&
+            !error.toLowerCase().includes("email") &&
+            !error.toLowerCase().includes("senha") && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {error}
+              </Alert>
+            )}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={24} /> : "Entrar"}
+          </Button>
+          <Grid container justifyContent="flex-end">
+            <Grid>
+              <MuiLink component={RouterLink} to="/register" variant="body2">
+                Não tem uma conta? Criar Conta
+              </MuiLink>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
