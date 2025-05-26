@@ -34,6 +34,7 @@ const LoginPage: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -44,7 +45,8 @@ const LoginPage: React.FC = () => {
 
       // Assuming API returns id, name, email
       userCtx.login({ id: data.id, name: data.name, email: data.email });
-      navigate("/dashboard"); // Or any other page after successful login
+
+      navigate("/"); // Or any other page after successful login
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

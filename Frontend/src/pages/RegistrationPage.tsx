@@ -34,6 +34,7 @@ const RegistrationPage: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, password }),
+        credentials: "include",
       });
 
       const data = await response.json();
