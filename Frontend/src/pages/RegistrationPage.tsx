@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router"; // useNavigate for potential redirection
+import { Link, useNavigate } from "react-router"; // Corrected import for react-router-dom v6+
 import InputField from "../components/InputField"; // Adjust path if necessary
 import styles from "./RegistrationPage.module.css"; // Import CSS Module
 
@@ -7,16 +7,47 @@ const RegistrationPage: React.FC = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  // const navigate = useNavigate(); // For redirecting after registration
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const handleRegistrationSubmit = (
+  const handleRegistrationSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    // TODO: Implement actual registration logic here
-    console.log("Registration attempt with:", { name, email, password });
-    alert(`Tentativa de cadastro com Nome: ${name}, E-mail: ${email}`);
-    // Example: navigate('/login'); // Redirect to login after successful registration
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/api/register", {
+        // Assuming this is your registration endpoint
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Falha ao tentar registrar.");
+      }
+
+      // On successful registration, you might want to inform the user
+      // and redirect them to the login page.
+      // alert("Cadastro realizado com sucesso! Faça o login para continuar."); // Optional: alert user
+      navigate("/login");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Ocorreu um erro desconhecido. Tente novamente.");
+      }
+      console.error("Registration error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,8 +90,13 @@ const RegistrationPage: React.FC = () => {
           required
           autoComplete="new-password"
         />
-        <button type="submit" className={styles.registerButton}>
-          Cadastrar
+        {error && <p className={styles.errorMessage}>{error}</p>}
+        <button
+          type="submit"
+          className={styles.registerButton}
+          disabled={isLoading}
+        >
+          {isLoading ? "Cadastrando..." : "Cadastrar"}
         </button>
       </form>
       <div className={styles.loginLink}>
