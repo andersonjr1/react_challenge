@@ -1,7 +1,8 @@
 import "./App.css";
-import { Routes, Route, Link } from "react-router";
+import { Routes, Route } from "react-router";
 import LoginPage from "./pages/LoginPage"; // Assuming LoginPage.tsx is in src/pages/
 import RegistrationPage from "./pages/RegistrationPage"; // Import the new page
+import MainPage from "./pages/MainPage";
 import { UserProvider } from "./contexts/UserContext";
 
 function App() {
@@ -11,9 +12,10 @@ function App() {
         {/* You can add a common navigation bar here if needed */}
 
         <Routes>
+          <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegistrationPage />} />
-          <Route
+          {/* <Route
             path="/"
             element={
               <div style={{ textAlign: "center", marginTop: "50px" }}>
@@ -24,7 +26,7 @@ function App() {
                 </p>
               </div>
             }
-          />
+          /> */}
         </Routes>
       </div>
     </UserProvider>
