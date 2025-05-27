@@ -1,8 +1,12 @@
 import { ErrorStatus } from "../utils/error";
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 import { authService as service } from "../service/authService";
 import jwt from "jsonwebtoken";
 import config from "../config/env";
+
+interface RequestWithUser extends Request {
+  user?: jwt.JwtPayload;
+}
 
 const authController = {
     register: async (req: Request, res: Response): Promise<void> => {
@@ -69,6 +73,29 @@ const authController = {
             }
           }
     },
+    checkAuthStatus: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const myRequest = req as RequestWithUser;
+
+            if (!req.user) {
+                res.status(401).json({ message: "Usuário não autenticado." });
+                return;
+            }
+            if(myRequest.user){
+                const { id, name, email} = myRequest.user;
+                res.status(200).json({message: "Usuario logado", data: { id, name, email }});
+            }
+        } catch (error) {
+            if (error instanceof ErrorStatus) {
+                const statusCode = error.status || 500;
+                res.status(statusCode).json({ message: error.message });
+            } else if (error instanceof Error) {
+                res.status(500).json({ message: error.message });
+            } else {
+                res.status(500).json({ message: "Ocorreu um erro desconhecido ao verificar o status da autenticação." });
+            }
+        }
+    }
 }
 
 export {authController}
