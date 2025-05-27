@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage"; // Assuming LoginPage.tsx is in src/p
 import RegistrationPage from "./pages/RegistrationPage"; // Import the new page
 import MainPage from "./pages/MainPage";
 import EditarAtivoPage from "./pages/EditarAtivoPage";
+import EditarManutencaoPage from "./pages/EditarManutencaoPage";
+
 import { UserProvider } from "./contexts/UserContext";
 
 function App() {
@@ -17,10 +19,11 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/ativos/:ativoId/editar" element={<EditarAtivoPage />} />
-          {/* <Route
+          <Route
             path="/ativos/:ativoId/manutencoes/:manutencaoId/editar"
             element={<EditarManutencaoPage />}
           />
+          {/* 
           <Route
             path="/ativos/:ativoId/historico"
             element={<HistoricoAtivoPage />}
