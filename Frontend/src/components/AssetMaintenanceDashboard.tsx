@@ -56,7 +56,6 @@ const AssetMaintenanceDashboard: React.FC = () => {
     setError(null);
     try {
       const data = await fetchAssetsWithMaintenances();
-      console.log(data);
       setAssetsData(data);
     } catch (err) {
       setError(
@@ -185,8 +184,7 @@ const AssetMaintenanceDashboard: React.FC = () => {
       ) : (
         <Grid container spacing={3}>
           {sortedAndFilteredAssets.map((asset) => (
-            // <Grid item xs={12} md={6} lg={4} key={asset.id}>
-            <Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={asset.id}>
               <Card elevation={3}>
                 <CardHeader
                   title={asset.name}
@@ -210,15 +208,14 @@ const AssetMaintenanceDashboard: React.FC = () => {
                   >
                     Manutenções Pendentes:
                   </Typography>
-                  <List dense>
+                  <List dense sx={{ height: "120px", overflowY: "auto" }}>
                     {asset.maintenances
                       .filter((m) => !m.done) // Show only undone maintenances here
                       .sort(
                         (a, b) =>
                           new Date(a.expected_at).getTime() -
                           new Date(b.expected_at).getTime()
-                      ) // Sort by date
-                      .slice(0, 3) // Show top 3 or configurable number
+                      ) // Sort by date, all items will be rendered for scrolling
                       .map((maintenance) => {
                         const status = getMaintenanceStatus(
                           maintenance.expected_at,
@@ -310,6 +307,7 @@ const AssetMaintenanceDashboard: React.FC = () => {
                                   />
                                 </>
                               }
+                              secondaryTypographyProps={{ component: "div" }}
                             />
                           </ListItem>
                         );
