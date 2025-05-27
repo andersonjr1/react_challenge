@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router"; // Use react-router-dom
 import {
   Container,
@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+import { UserContext } from "../contexts/UserContext";
 
 // Não precisamos da interface Maintenance completa aqui, apenas os campos que vamos enviar
 interface NewMaintenanceData {
@@ -39,6 +40,14 @@ const formatDateInputToApiFormat = (
 const CriarManutencaoPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>(); // Apenas ativoId é necessário
   const navigate = useNavigate();
+
+  const userCtx = React.useContext(UserContext);
+
+  useEffect(() => {
+    if (!userCtx.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [userCtx.isLoggedIn]);
 
   const [service, setService] = useState<string>("");
   const [expectedAt, setExpectedAt] = useState<string>(""); // Formato YYYY-MM-DD para input

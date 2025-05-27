@@ -26,9 +26,10 @@ interface Maintenance {
   updated_at: string;
 }
 
+import { UserContext } from "../contexts/UserContext";
+
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
-// Função auxiliar para formatar ISO string para YYYY-MM-DD (para input type="date")
 const formatIsoToDateInput = (isoString: string | null): string => {
   if (!isoString) return "";
   try {
@@ -44,9 +45,6 @@ const formatIsoToDateInput = (isoString: string | null): string => {
   }
 };
 
-// Função auxiliar para formatar YYYY-MM-DD para ISO string (para API)
-// Sua API de exemplo parece aceitar YYYY-MM-DD, então podemos enviar assim.
-// Se a API exigir ISO string, esta função precisaria de mais lógica.
 const formatDateInputToIso = (dateInput: string | null): string | null => {
   if (!dateInput) return null;
   // Assuming API expects YYYY-MM-DD as is or can parse it
@@ -59,7 +57,16 @@ const EditarManutencaoPage: React.FC = () => {
     ativoId: string;
     manutencaoId: string;
   }>();
+
   const navigate = useNavigate();
+
+  const userCtx = React.useContext(UserContext);
+
+  useEffect(() => {
+    if (!userCtx.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [userCtx.isLoggedIn]);
 
   const [service, setService] = useState<string>("");
   const [expectedAt, setExpectedAt] = useState<string>(""); // YYYY-MM-DD format for input

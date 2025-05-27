@@ -11,11 +11,43 @@ import CriarAtivoPage from "./pages/CriarAtivoPage";
 import CriarManutencaoPage from "./pages/CriarManutencaoPage";
 import MainAppBar from "./components/MainAppBar";
 
-import { UserProvider } from "./contexts/UserContext";
+import { UserContext } from "./contexts/UserContext";
+import type { UserData, UserContextType } from "./contexts/UserContext";
+import { useState, useEffect } from "react";
 
 function App() {
+  const [user, setUser] = useState<UserData & { isLoggedIn: boolean }>({
+    id: null,
+    name: "",
+    email: "",
+    isLoggedIn: false,
+  });
+
+  const login = (userData: UserData) => {
+    setUser({ ...userData, isLoggedIn: true });
+  };
+
+  const logout = () => {
+    setUser({ id: null, name: "", email: "", isLoggedIn: false });
+  };
+
+  const fetchUser = async () => {
+    const response = await fetch("http://localhost:3000/api/check-auth", {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      return;
+    }
+    const data = await response.json();
+    login({ id: data.data.id, name: data.data.name, email: data.data.email });
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   return (
-    <UserProvider>
+    <UserContext.Provider value={{ ...user, login, logout } as UserContextType}>
       <MainAppBar />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -37,7 +69,7 @@ function App() {
           element={<CriarManutencaoPage />}
         />
       </Routes>
-    </UserProvider>
+    </UserContext.Provider>
   );
 }
 

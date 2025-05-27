@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router"; // Use react-router-dom for useNavigate
 import {
   Container,
@@ -10,6 +10,8 @@ import {
   Alert,
   Grid,
 } from "@mui/material";
+
+import { UserContext } from "../contexts/UserContext";
 
 // Não precisamos da interface Asset completa aqui, apenas os campos que vamos enviar
 interface NewAssetData {
@@ -96,6 +98,13 @@ const CriarAtivoPage: React.FC = () => {
   };
 
   // Não há estado de initialLoading para criação
+  const userCtx = React.useContext(UserContext);
+
+  useEffect(() => {
+    if (!userCtx.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [userCtx.isLoggedIn]);
 
   return (
     <Container component="main" maxWidth="sm" sx={{ mt: 4, mb: 4 }}>

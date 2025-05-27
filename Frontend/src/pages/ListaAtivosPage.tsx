@@ -25,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InfoIcon from "@mui/icons-material/Info";
+import { UserContext } from "../contexts/UserContext";
 
 const API_BASE_URL = "http://localhost:3000/api"; // Sua URL base da API
 
@@ -65,6 +66,14 @@ const ListaAtivosPage: React.FC = () => {
   useEffect(() => {
     fetchAssets();
   }, []); // Executa apenas uma vez ao montar o componente
+
+  const userCtx = React.useContext(UserContext);
+
+  useEffect(() => {
+    if (!userCtx.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [userCtx.isLoggedIn]);
 
   // Funções de navegação e ação
   const handleAddAsset = () => {

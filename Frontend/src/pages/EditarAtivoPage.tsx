@@ -11,6 +11,8 @@ import {
   Grid,
 } from "@mui/material";
 
+import { UserContext } from "../contexts/UserContext";
+
 // Definindo a interface para o ativo, baseada no seu retorno de API
 interface Asset {
   id: string;
@@ -26,6 +28,14 @@ const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domí
 const EditarAtivoPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>(); // Obtém o ID do ativo da URL
   const navigate = useNavigate();
+
+  const userCtx = React.useContext(UserContext);
+
+  useEffect(() => {
+    if (!userCtx.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [userCtx.isLoggedIn]);
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");

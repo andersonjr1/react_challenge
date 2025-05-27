@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link as RouterLink, useNavigate } from "react-router"; // Corrected import and aliased Link
 import {
   Container,
@@ -11,6 +11,7 @@ import {
   Link as MuiLink, // MUI Link
   Grid,
 } from "@mui/material";
+import { UserContext } from "../contexts/UserContext";
 
 const RegistrationPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -18,6 +19,7 @@ const RegistrationPage: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const userCtx = React.useContext(UserContext);
   const navigate = useNavigate();
 
   const handleRegistrationSubmit = async (
@@ -56,6 +58,12 @@ const RegistrationPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (userCtx.isLoggedIn) {
+      navigate("/");
+    }
+  }, [userCtx.isLoggedIn]);
 
   return (
     <Container component="main" maxWidth="xs">

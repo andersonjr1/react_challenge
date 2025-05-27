@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, Link as RouterLink } from "react-router"; // Renamed Link to avoid conflict
 import {
   Container,
@@ -62,6 +62,12 @@ const LoginPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (userCtx.isLoggedIn) {
+      navigate("/");
+    }
+  }, [userCtx.isLoggedIn]);
 
   return (
     <Container component="main" maxWidth="xs">

@@ -70,8 +70,7 @@ const MainAppBar: React.FC = () => {
     setAnchorElNav(null);
   };
 
-  // Only render the AppBar if the user is logged in
-  if (!localStorage.getItem("user")) {
+  if (!userCtx.isLoggedIn) {
     return null;
   }
 

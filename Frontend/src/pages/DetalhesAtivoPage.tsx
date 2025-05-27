@@ -22,6 +22,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit"; // Import EditIcon for the buttons
 import AddIcon from "@mui/icons-material/Add"; // Import AddIcon for the create button
 import DeleteIcon from "@mui/icons-material/Delete"; // Import DeleteIcon for the delete button
+import { UserContext } from "../contexts/UserContext";
 
 import type { Asset, Maintenance, AssetWithMaintenances } from "../types/types"; // Adjust path if necessary
 
@@ -80,6 +81,13 @@ const HistoricoAtivoPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>();
   const navigate = useNavigate(); // Initialize useNavigate hook
 
+  const userCtx = React.useContext(UserContext);
+
+  useEffect(() => {
+    if (!userCtx.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [userCtx.isLoggedIn]);
   const [asset, setAsset] = useState<AssetWithMaintenances | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
