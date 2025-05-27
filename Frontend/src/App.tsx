@@ -8,33 +8,35 @@ import EditarManutencaoPage from "./pages/EditarManutencaoPage";
 import HistoricoAtivoPage from "./pages/HistoricoAtivoPage"; // Import the new page
 import ListaAtivosPage from "./pages/ListaAtivosPage";
 import CriarAtivoPage from "./pages/CriarAtivoPage";
+import CriarManutencaoPage from "./pages/CriarManutencaoPage";
+import MainAppBar from "./components/MainAppBar";
 
 import { UserProvider } from "./contexts/UserContext";
 
 function App() {
   return (
     <UserProvider>
-      <div>
-        {/* You can add a common navigation bar here if needed */}
-
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/ativos/:ativoId/editar" element={<EditarAtivoPage />} />
-          <Route
-            path="/ativos/:ativoId/manutencoes/:manutencaoId/editar"
-            element={<EditarManutencaoPage />}
-          />
-          <Route
-            path="/ativos/:ativoId/historico"
-            element={<HistoricoAtivoPage />}
-          />
-          <Route path="/ativos" element={<ListaAtivosPage />} />
-          <Route path="/ativos/criar" element={<CriarAtivoPage />} />
-          <Route path="/ativos/:ativoId/manutencoes/criar" element={<div />} />
-        </Routes>
-      </div>
+      <MainAppBar />
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegistrationPage />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/ativos/:ativoId/editar" element={<EditarAtivoPage />} />
+        <Route
+          path="/ativos/:ativoId/manutencoes/:manutencaoId/editar"
+          element={<EditarManutencaoPage />}
+        />
+        <Route
+          path="/ativos/:ativoId/historico"
+          element={<HistoricoAtivoPage />}
+        />
+        <Route path="/ativos" element={<ListaAtivosPage />} />
+        <Route path="/ativos/criar" element={<CriarAtivoPage />} />
+        <Route
+          path="/ativos/:ativoId/manutencoes/criar"
+          element={<CriarManutencaoPage />}
+        />
+      </Routes>
     </UserProvider>
   );
 }

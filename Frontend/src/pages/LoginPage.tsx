@@ -46,6 +46,11 @@ const LoginPage: React.FC = () => {
       // Assuming API returns id, name, email
       userCtx.login({ id: data.id, name: data.name, email: data.email });
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ id: data.id, name: data.name, email: data.email })
+      );
+
       navigate("/"); // Or any other page after successful login
     } catch (err: unknown) {
       if (err instanceof Error) {
