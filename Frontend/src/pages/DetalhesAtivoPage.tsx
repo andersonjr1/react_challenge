@@ -13,8 +13,16 @@ import {
   Divider,
   Button, // Import Button for "Editar Ativo"
   IconButton, // Import IconButton for "Editar Manutenção"
+  Dialog, // Import Dialog components for confirmation
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit"; // Import EditIcon for the buttons
+import AddIcon from "@mui/icons-material/Add"; // Import AddIcon for the create button
+import DeleteIcon from "@mui/icons-material/Delete"; // Import DeleteIcon for the delete button
+
 import type { Asset, Maintenance, AssetWithMaintenances } from "../types/types"; // Adjust path if necessary
 
 // --- API call functions ---
@@ -46,6 +54,28 @@ const fetchAssetMaintenancesAPI = async (
   return response.json();
 };
 
+const deleteMaintenanceAPI = async (
+  assetId: string,
+  maintenanceId: string
+): Promise<void> => {
+  const response = await fetch(
+    `http://localhost:3000/api/manutencoes/${maintenanceId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(
+        `Manutenção com ID "${maintenanceId}" não encontrada para o ativo "${assetId}".`
+      );
+    }
+    throw new Error("Falha ao deletar manutenção.");
+  }
+  // DELETE requests usually return 204 No Content, so no JSON to parse
+};
+
 const HistoricoAtivoPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>();
   const navigate = useNavigate(); // Initialize useNavigate hook
@@ -53,6 +83,10 @@ const HistoricoAtivoPage: React.FC = () => {
   const [asset, setAsset] = useState<AssetWithMaintenances | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [maintenanceToDeleteId, setMaintenanceToDeleteId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     if (!ativoId) {
@@ -80,11 +114,11 @@ const HistoricoAtivoPage: React.FC = () => {
 
         setAsset({ ...assetDetails, maintenances: sortedMaintenances });
       } catch (err) {
-        console.error("Erro ao buscar histórico do ativo:", err);
+        console.error("Erro ao buscar detalhes do ativo:", err);
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError("Erro ao carregar histórico do ativo. Tente novamente.");
+          setError("Erro ao carregar detalhes do ativo. Tente novamente.");
         }
       } finally {
         setLoading(false);
@@ -107,6 +141,57 @@ const HistoricoAtivoPage: React.FC = () => {
     }
   };
 
+  // Handler for creating a new maintenance
+  const handleCreateMaintenance = () => {
+    if (ativoId) {
+      navigate(`/ativos/${ativoId}/manutencoes/criar`);
+    }
+  };
+
+  // Handler for opening the delete confirmation dialog
+  const handleOpenDeleteDialog = (maintenanceId: string) => {
+    setMaintenanceToDeleteId(maintenanceId);
+    setOpenDeleteDialog(true);
+  };
+
+  // Handler for closing the delete confirmation dialog
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setMaintenanceToDeleteId(null);
+  };
+
+  // Handler for confirming and executing maintenance deletion
+  const handleConfirmDeleteMaintenance = async () => {
+    if (!ativoId || !maintenanceToDeleteId) {
+      setError("ID do ativo ou da manutenção ausente para exclusão.");
+      handleCloseDeleteDialog();
+      return;
+    }
+
+    try {
+      await deleteMaintenanceAPI(ativoId, maintenanceToDeleteId);
+      setAsset((prevAsset) => {
+        if (!prevAsset) return null;
+        return {
+          ...prevAsset,
+          maintenances: prevAsset.maintenances.filter(
+            (m) => m.id !== maintenanceToDeleteId
+          ),
+        };
+      });
+      // Optionally, add a success notification here (e.g., using a Snackbar)
+    } catch (err) {
+      console.error("Erro ao deletar manutenção:", err);
+      if (err instanceof Error) {
+        setError(`Falha ao deletar manutenção: ${err.message}`);
+      } else {
+        setError("Ocorreu um erro desconhecido ao deletar a manutenção.");
+      }
+    } finally {
+      handleCloseDeleteDialog();
+    }
+  };
+
   if (loading) {
     return (
       <Container
@@ -121,7 +206,7 @@ const HistoricoAtivoPage: React.FC = () => {
       >
         <CircularProgress />
         <Typography variant="h6" sx={{ ml: 2 }}>
-          Carregando histórico do ativo...
+          Carregando detalhes do ativo...
         </Typography>
       </Container>
     );
@@ -157,21 +242,40 @@ const HistoricoAtivoPage: React.FC = () => {
           }}
         >
           <Typography variant="h4" component="h1" gutterBottom>
-            Histórico de Manutenções
+            Detalhes
+          </Typography>
+          <Button
+            variant="contained" // Use contained for primary action
+            startIcon={<AddIcon />}
+            onClick={handleCreateMaintenance}
+            disabled={!ativoId}
+          >
+            Manutenção
+          </Button>
+        </Box>
+
+        {/* Asset Details and Edit Button */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h5" component="h2" gutterBottom color="primary">
+            Ativo: {asset.name}
           </Typography>
           <Button
             variant="outlined"
             startIcon={<EditIcon />}
             onClick={handleEditAsset}
-            disabled={!ativoId} // Disable if ativoId is not available
+            disabled={!ativoId}
           >
             Editar Ativo
           </Button>
         </Box>
 
-        <Typography variant="h5" component="h2" gutterBottom color="primary">
-          Ativo: {asset.name}
-        </Typography>
         <Typography variant="body1" color="text.secondary" gutterBottom>
           {asset.description}
         </Typography>
@@ -193,13 +297,23 @@ const HistoricoAtivoPage: React.FC = () => {
                 <ListItem
                   alignItems="flex-start"
                   secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="edit maintenance"
-                      onClick={() => handleEditMaintenance(maint.id)}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    <>
+                      <IconButton
+                        edge="end"
+                        aria-label="edit maintenance"
+                        onClick={() => handleEditMaintenance(maint.id)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete maintenance"
+                        onClick={() => handleOpenDeleteDialog(maint.id)}
+                        sx={{ ml: 1 }} // Add margin to separate from edit icon
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
                   }
                 >
                   <ListItemText
@@ -270,6 +384,33 @@ const HistoricoAtivoPage: React.FC = () => {
           </List>
         )}
       </Paper>
+      {/* Confirmation Dialog for Deleting Maintenance */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Confirmar Exclusão de Manutenção"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Tem certeza que deseja excluir esta manutenção? Esta ação não pode
+            ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancelar</Button>
+          <Button
+            onClick={handleConfirmDeleteMaintenance}
+            color="error"
+            autoFocus
+          >
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

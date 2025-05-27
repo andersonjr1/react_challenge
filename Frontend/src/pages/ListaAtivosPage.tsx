@@ -76,7 +76,7 @@ const ListaAtivosPage: React.FC = () => {
   };
 
   const handleViewDetails = (assetId: string) => {
-    navigate(`/ativos/${assetId}/historico`);
+    navigate(`/ativos/${assetId}/detalhes`);
   };
 
   const handleDeleteClick = (assetId: string) => {

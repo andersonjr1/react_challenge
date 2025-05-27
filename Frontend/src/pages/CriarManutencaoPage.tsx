@@ -104,7 +104,7 @@ const CriarManutencaoPage: React.FC = () => {
 
       setSuccess("Manutenção criada com sucesso!");
       setTimeout(() => {
-        navigate(`/ativos/${ativoId}/historico`); // Redireciona para o histórico do ativo
+        navigate(`/ativos/${ativoId}/detalhes`); // Redireciona para o histórico do ativo
       }, 1500);
     } catch (err) {
       setError(
