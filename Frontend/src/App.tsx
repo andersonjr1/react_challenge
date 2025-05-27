@@ -6,6 +6,7 @@ import MainPage from "./pages/MainPage";
 import EditarAtivoPage from "./pages/EditarAtivoPage";
 import EditarManutencaoPage from "./pages/EditarManutencaoPage";
 import HistoricoAtivoPage from "./pages/HistoricoAtivoPage"; // Import the new page
+import ListaAtivosPage from "./pages/ListaAtivosPage";
 
 import { UserProvider } from "./contexts/UserContext";
 
@@ -28,6 +29,7 @@ function App() {
             path="/ativos/:ativoId/historico"
             element={<HistoricoAtivoPage />}
           />
+          <Route path="/ativos" element={<ListaAtivosPage />} />
           <Route path="/ativos/criar" element={<div />} />
           <Route path="/ativos/:ativoId/manutencoes/criar" element={<div />} />
         </Routes>
