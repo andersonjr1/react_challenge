@@ -9,10 +9,13 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Link as RouterLink, useNavigate } from "react-router";
 import { UserContext } from "../contexts/UserContext"; // Import UserContext
 
@@ -22,6 +25,7 @@ const MainAppBar: React.FC = () => {
   const navigate = useNavigate();
   const [loadingLogout, setLoadingLogout] = useState<boolean>(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const userCtx = useContext(UserContext); // Get UserContext
   const { logout } = userCtx; // Destructure isLoggedIn and logout from context
@@ -58,6 +62,14 @@ const MainAppBar: React.FC = () => {
     }
   };
 
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
   // Only render the AppBar if the user is logged in
   if (!localStorage.getItem("user")) {
     return null;
@@ -69,8 +81,54 @@ const MainAppBar: React.FC = () => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Gerenciamento de Ativos
         </Typography>
-
-        <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        <Box sx={{ display: { xs: "flex", md: "none" } }}>
+          <IconButton
+            size="large"
+            aria-label="navigation menu"
+            aria-controls="menu-appbar-nav"
+            aria-haspopup="true"
+            onClick={handleOpenNavMenu}
+            color="inherit"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            id="menu-appbar-nav"
+            anchorEl={anchorElNav}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            open={Boolean(anchorElNav)}
+            onClose={handleCloseNavMenu}
+            sx={{
+              display: { xs: "block", md: "none" },
+            }}
+          >
+            <MenuItem
+              onClick={handleCloseNavMenu}
+              component={RouterLink}
+              to="/"
+            >
+              <DashboardIcon sx={{ mr: 1 }} />
+              <Typography textAlign="center">Dashboard</Typography>
+            </MenuItem>
+            <MenuItem
+              onClick={handleCloseNavMenu}
+              component={RouterLink}
+              to="/ativos"
+            >
+              <ListAltIcon sx={{ mr: 1 }} />
+              <Typography textAlign="center">Lista de Ativos</Typography>
+            </MenuItem>
+          </Menu>
+        </Box>
+        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
           <Button
             color="inherit"
             component={RouterLink}
@@ -91,20 +149,21 @@ const MainAppBar: React.FC = () => {
           </Button>
         </Box>
 
-        <Tooltip title="Sair (Logout)">
-          <IconButton
-            color="inherit"
-            onClick={handleLogout}
-            disabled={loadingLogout}
-            sx={{ ml: 2 }}
-          >
-            {loadingLogout ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              <LogoutIcon />
-            )}
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ ml: { xs: 0, md: 2 } }}>
+          <Tooltip title="Sair (Logout)">
+            <IconButton
+              color="inherit"
+              onClick={handleLogout}
+              disabled={loadingLogout}
+            >
+              {loadingLogout ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                <LogoutIcon />
+              )}
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Toolbar>
       {logoutError && (
         <Alert severity="error" sx={{ width: "100%", borderRadius: 0 }}>
