@@ -10,8 +10,8 @@ const maintenanceRecordsRepository = {
   create: async (data: CreateMaintenanceRecordRepositoryData): Promise<MaintenanceRecord | null> => {
     try {
       const query = `
-        INSERT INTO maintenance_records (asset_id, service, expected_at, performed_at, description, done)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO maintenance_records (asset_id, service, expected_at, performed_at, description, done, condition_next_maintenance, date_next_maintenance)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *;
       `;
       const values = [
@@ -21,6 +21,8 @@ const maintenanceRecordsRepository = {
         data.performed_at ?? null,
         data.description ?? null,
         data.done ?? null, // Default to false in DB or handle here if needed
+        data.condition_next_maintenance ?? null,
+        data.date_next_maintenance ?? null,
       ];
       const response = await pool.query(query, values);
       if(response.rowCount)
@@ -94,6 +96,14 @@ const maintenanceRecordsRepository = {
       if (data.hasOwnProperty('done')) {
         fieldsToUpdate.push(`done = $${queryIndex++}`);
         values.push(data.done);
+      }
+      if (data.hasOwnProperty('condition_next_maintenance')) {
+        fieldsToUpdate.push(`condition_next_maintenance = $${queryIndex++}`);
+        values.push(data.condition_next_maintenance);
+      }
+      if (data.hasOwnProperty('date_next_maintenance')) {
+        fieldsToUpdate.push(`date_next_maintenance = $${queryIndex++}`);
+        values.push(data.date_next_maintenance);
       }
 
       if (fieldsToUpdate.length === 0) {

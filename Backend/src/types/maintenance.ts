@@ -9,6 +9,8 @@ export interface MaintenanceRecord {
   performed_at: Date | string | null; // Stored as DATE in DB, can be string on input/output
   description: string | null;
   done: boolean | null;
+  condition_next_maintenance: string | null; // VARCHAR(255)
+  date_next_maintenance: Date | string | null; // Stored as DATE in DB
   created_at: Date;
   updated_at: Date;
 }
@@ -23,6 +25,8 @@ export interface CreateMaintenanceRecordClientBody {
   performed_at?: string | null;
   description?: string | null;
   done?: boolean | null;
+  condition_next_maintenance?: string | null;
+  date_next_maintenance?: string | null; // Client typically sends dates as strings
 }
 
 /**

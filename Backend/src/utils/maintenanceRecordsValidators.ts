@@ -53,4 +53,20 @@ function validateMaintenanceDescription(description: any): boolean {
     return typeof description === 'string';
 }
 
-export { validateMaintenanceService, validateMaintenanceDate, validateMaintenanceDescription };
+/**
+ * Validates the condition for the next maintenance.
+ * - Can be null or undefined (optional).
+ * - If provided, must be a string.
+ * - Must not exceed 255 characters.
+ * @param condition - The condition string to validate.
+ * @returns True if the condition is valid or optional, false otherwise.
+ */
+function validateMaintenanceCondition(condition: any): boolean {
+    if (condition === null || condition === undefined) {
+        return true; // Optional
+    }
+    return typeof condition === 'string' && condition.length <= 255;
+}
+
+
+export { validateMaintenanceService, validateMaintenanceDate, validateMaintenanceDescription, validateMaintenanceCondition };

@@ -5,6 +5,7 @@ import {
   validateMaintenanceService,
   validateMaintenanceDate,
   validateMaintenanceDescription,
+  validateMaintenanceCondition,
 } from "../utils/maintenanceRecordsValidators";
 import {
   MaintenanceRecord,
@@ -41,8 +42,7 @@ const maintenanceRecordsService = {
   ): Promise<MaintenanceRecord | null> => {
     try {
       await maintenanceRecordsService._verifyAssetOwnership(assetId, userId);
-
-      let { service, expected_at, performed_at, description, done } = clientData;
+      let { service, expected_at, performed_at, description, done, condition_next_maintenance, date_next_maintenance } = clientData;
 
       if (!service) {
         const error = new ErrorStatus("Nome do serviço de manutenção é obrigatório.");
@@ -71,6 +71,16 @@ const maintenanceRecordsService = {
         error.status = 400;
         throw error;
       }
+      if (condition_next_maintenance !== undefined && condition_next_maintenance !== null && !validateMaintenanceCondition(condition_next_maintenance)) {
+        const error = new ErrorStatus("Condição para próxima manutenção inválida. Se fornecida, deve ser uma string com no máximo 255 caracteres.");
+        error.status = 400;
+        throw error;
+      }
+      if (date_next_maintenance && !validateMaintenanceDate(date_next_maintenance)) {
+        const error = new ErrorStatus("Data da próxima manutenção inválida.");
+        error.status = 400;
+        throw error;
+      }
 
       const repoData: CreateMaintenanceRecordRepositoryData = {
         asset_id: assetId,
@@ -79,6 +89,8 @@ const maintenanceRecordsService = {
         performed_at: performed_at ? new Date(performed_at).toISOString().split('T')[0] : null,
         description: description ?? null,
         done: done ?? null,
+        condition_next_maintenance: condition_next_maintenance ?? null,
+        date_next_maintenance: date_next_maintenance ? new Date(date_next_maintenance).toISOString().split('T')[0] : null,
       };
 
       return await repository.create(repoData);
@@ -147,6 +159,22 @@ const maintenanceRecordsService = {
       }
       if (data.hasOwnProperty('done')) {
         updateData.done = data.done;
+      }
+      if (data.hasOwnProperty('condition_next_maintenance')) {
+        if (data.condition_next_maintenance !== undefined && data.condition_next_maintenance !== null && !validateMaintenanceCondition(data.condition_next_maintenance)) {
+          const error = new ErrorStatus("Condição para próxima manutenção inválida.");
+          error.status = 400;
+          throw error;
+        }
+        updateData.condition_next_maintenance = data.condition_next_maintenance;
+      }
+      if (data.hasOwnProperty('date_next_maintenance')) {
+        if (data.date_next_maintenance && !validateMaintenanceDate(data.date_next_maintenance)) {
+          const error = new ErrorStatus("Data da próxima manutenção inválida.");
+          error.status = 400;
+          throw error;
+        }
+        updateData.date_next_maintenance = data.date_next_maintenance ? new Date(data.date_next_maintenance).toISOString().split('T')[0] : null;
       }
 
       const updatedRecord = await repository.update(maintenanceId, updateData);
