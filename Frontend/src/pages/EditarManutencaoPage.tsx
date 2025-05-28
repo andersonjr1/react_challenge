@@ -24,6 +24,8 @@ interface Maintenance {
   done: boolean;
   created_at: string;
   updated_at: string;
+  condition_next_maintenance?: string | null;
+  date_next_maintenance?: string | null;
 }
 
 import { UserContext } from "../contexts/UserContext";
@@ -73,6 +75,9 @@ const EditarManutencaoPage: React.FC = () => {
   const [performedAt, setPerformedAt] = useState<string>(""); // YYYY-MM-DD format for input
   const [description, setDescription] = useState<string>("");
   const [done, setDone] = useState<boolean>(false);
+  const [conditionNextMaintenance, setConditionNextMaintenance] =
+    useState<string>("");
+  const [dateNextMaintenance, setDateNextMaintenance] = useState<string>(""); // YYYY-MM-DD format for input
 
   const [loading, setLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
@@ -114,6 +119,12 @@ const EditarManutencaoPage: React.FC = () => {
         setPerformedAt(formatIsoToDateInput(maintenanceToEdit.performed_at));
         setDescription(maintenanceToEdit.description || "");
         setDone(maintenanceToEdit.done);
+        setConditionNextMaintenance(
+          maintenanceToEdit.condition_next_maintenance || ""
+        );
+        setDateNextMaintenance(
+          formatIsoToDateInput(maintenanceToEdit.date_next_maintenance || "")
+        );
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Erro ao carregar manutenção."
@@ -136,8 +147,14 @@ const EditarManutencaoPage: React.FC = () => {
     // Validação: pelo menos um campo (serviço ou descrição) deve ser preenchido
     // ou se as datas ou o status 'done' foram alterados.
     const isAnyFieldFilled =
-      service.trim() || description.trim() || expectedAt || performedAt;
+      service.trim() ||
+      description.trim() ||
+      expectedAt ||
+      performedAt ||
+      conditionNextMaintenance.trim() ||
+      dateNextMaintenance;
     if (!isAnyFieldFilled && !done) {
+      // This validation might need adjustment based on how 'done' interacts
       // Assuming 'done' can also be the only change
       setError("Pelo menos um campo deve ser preenchido ou alterado.");
       setLoading(false);
@@ -164,6 +181,10 @@ const EditarManutencaoPage: React.FC = () => {
             performed_at: formatDateInputToIso(performedAt),
             description: description.trim(),
             done: done,
+            condition_next_maintenance: conditionNextMaintenance.trim()
+              ? conditionNextMaintenance.trim()
+              : null,
+            date_next_maintenance: formatDateInputToIso(dateNextMaintenance),
           }),
           credentials: "include",
         }
@@ -291,6 +312,30 @@ const EditarManutencaoPage: React.FC = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="condition_next_maintenance"
+            label="Condição Próxima Manutenção (Opcional)"
+            name="condition_next_maintenance"
+            autoComplete="off"
+            multiline
+            rows={2}
+            value={conditionNextMaintenance}
+            onChange={(e) => setConditionNextMaintenance(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="date_next_maintenance"
+            label="Data Próxima Manutenção (Opcional)"
+            name="date_next_maintenance"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={dateNextMaintenance}
+            onChange={(e) => setDateNextMaintenance(e.target.value)}
+          />
+
           <FormControlLabel
             control={
               <Checkbox
@@ -303,7 +348,6 @@ const EditarManutencaoPage: React.FC = () => {
             label="Concluída"
             sx={{ mt: 1, mb: 2 }}
           />
-
           <Grid container spacing={2} sx={{ mt: 3 }}>
             {/* Restaurado o prop 'item' para o funcionamento correto do Grid */}
             <Grid size={{ xs: 12, sm: 6 }}>

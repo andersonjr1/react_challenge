@@ -16,6 +16,8 @@ export interface Maintenance {
   performed_at: string | null; // Can be null if not performed
   description: string;
   done: boolean;
+  condition_next_maintenance?: string | null;
+  date_next_maintenance?: string | null; // Assuming it comes as a string (e.g., ISO date)
   created_at: string;
   updated_at: string;
 }

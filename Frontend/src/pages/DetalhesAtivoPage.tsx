@@ -380,6 +380,29 @@ const HistoricoAtivoPage: React.FC = () => {
                             {new Date(maint.performed_at).toLocaleDateString()}
                           </Typography>
                         )}
+                        {maint.condition_next_maintenance && (
+                          <Typography
+                            sx={{ display: "block" }}
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                          >
+                            Próxima Condição: {maint.condition_next_maintenance}
+                          </Typography>
+                        )}
+                        {maint.date_next_maintenance && (
+                          <Typography
+                            sx={{ display: "block" }}
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                          >
+                            Próxima Data:{" "}
+                            {new Date(
+                              maint.date_next_maintenance
+                            ).toLocaleDateString()}
+                          </Typography>
+                        )}
                       </>
                     }
                   />

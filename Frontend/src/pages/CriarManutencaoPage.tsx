@@ -22,6 +22,8 @@ interface NewMaintenanceData {
   performed_at?: string | null; // Opcional na criação, YYYY-MM-DD ou ISO
   description: string;
   done: boolean;
+  condition_next_maintenance?: string | null;
+  date_next_maintenance?: string | null; // YYYY-MM-DD ou ISO
 }
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
@@ -54,6 +56,9 @@ const CriarManutencaoPage: React.FC = () => {
   const [performedAt, setPerformedAt] = useState<string>(""); // Formato YYYY-MM-DD para input
   const [description, setDescription] = useState<string>("");
   const [done, setDone] = useState<boolean>(false);
+  const [conditionNextMaintenance, setConditionNextMaintenance] =
+    useState<string>("");
+  const [dateNextMaintenance, setDateNextMaintenance] = useState<string>(""); // Formato YYYY-MM-DD para input
 
   const [loading, setLoading] = useState<boolean>(false); // Para o estado de salvar
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +95,12 @@ const CriarManutencaoPage: React.FC = () => {
       }),
       description: description.trim(),
       done: done,
+      ...(conditionNextMaintenance.trim() && {
+        condition_next_maintenance: conditionNextMaintenance.trim(),
+      }),
+      ...(dateNextMaintenance && {
+        date_next_maintenance: formatDateInputToApiFormat(dateNextMaintenance),
+      }),
     };
 
     try {
@@ -217,6 +228,29 @@ const CriarManutencaoPage: React.FC = () => {
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="condition_next_maintenance"
+            label="Condição Próxima Manutenção (Opcional)"
+            name="condition_next_maintenance"
+            autoComplete="off"
+            multiline
+            rows={2}
+            value={conditionNextMaintenance}
+            onChange={(e) => setConditionNextMaintenance(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="date_next_maintenance"
+            label="Data Próxima Manutenção (Opcional)"
+            name="date_next_maintenance"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={dateNextMaintenance}
+            onChange={(e) => setDateNextMaintenance(e.target.value)}
           />
           <FormControlLabel
             control={
