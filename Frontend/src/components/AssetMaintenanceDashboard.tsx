@@ -26,7 +26,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DetailsIcon from "@mui/icons-material/Details";
+import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EventBusyIcon from "@mui/icons-material/EventBusy"; // Overdue
 import EventNoteIcon from "@mui/icons-material/EventNote"; // Scheduled
@@ -324,7 +324,7 @@ const AssetMaintenanceDashboard: React.FC = () => {
                 <CardActions sx={{ justifyContent: "space-between" }}>
                   <Button
                     size="small"
-                    startIcon={<DetailsIcon />}
+                    startIcon={<InfoIcon />}
                     onClick={() => navigate(`/ativos/${asset.id}/detalhes`)} // Navigate to a page showing all maintenances
                   >
                     Detalhes do ativo
