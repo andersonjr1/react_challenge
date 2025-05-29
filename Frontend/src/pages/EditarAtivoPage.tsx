@@ -115,7 +115,7 @@ const EditarAtivoPage: React.FC = () => {
       setSuccess("Ativo atualizado com sucesso!");
       // Opcional: Redirecionar após um pequeno atraso para o usuário ver a mensagem de sucesso
       setTimeout(() => {
-        navigate("/"); // Ou para a página de detalhes do ativo
+        navigate(-1); // Ou para a página de detalhes do ativo
       }, 1500);
     } catch (err) {
       setError(

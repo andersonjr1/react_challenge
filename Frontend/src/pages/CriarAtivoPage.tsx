@@ -73,7 +73,7 @@ const CriarAtivoPage: React.FC = () => {
       // Pode redirecionar para a lista de ativos ou para a página de detalhes do novo ativo
       setTimeout(() => {
         // Exemplo: redireciona para a lista de ativos
-        navigate("/ativos");
+        navigate(-1);
         // Exemplo: redireciona para o histórico do ativo recém-criado (se a API retornar o ID)
         // if (createdAsset && createdAsset.id) {
         //   navigate(`/ativos/${createdAsset.id}/historico`);
