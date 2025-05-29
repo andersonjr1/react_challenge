@@ -67,7 +67,7 @@ const deleteMaintenanceAPI = async (
   // DELETE requests usually return 204 No Content, so no JSON to parse
 };
 
-const DetalhesAtivoPage: React.FC = () => {
+const AssetDetailsPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>();
   const navigate = useNavigate(); // Initialize useNavigate hook
 
@@ -269,4 +269,4 @@ const DetalhesAtivoPage: React.FC = () => {
   );
 };
 
-export default DetalhesAtivoPage;
+export default AssetDetailsPage;

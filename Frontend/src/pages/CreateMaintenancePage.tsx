@@ -8,7 +8,7 @@ import { formatDateInputToIso } from "../utils/dateUtils"; // Import the utility
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
-const CriarManutencaoPage: React.FC = () => {
+const CreateMaintenancePage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>(); // Apenas ativoId é necessário
   const navigate = useNavigate();
 
@@ -197,4 +197,4 @@ const CriarManutencaoPage: React.FC = () => {
   );
 };
 
-export default CriarManutencaoPage;
+export default CreateMaintenancePage;

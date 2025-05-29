@@ -13,7 +13,7 @@ import AssetForm from "../components/AssetForm"; // Import the new AssetForm com
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
-const EditarAtivoPage: React.FC = () => {
+const EditAssetPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>(); // Obtém o ID do ativo da URL
   const navigate = useNavigate();
 
@@ -189,4 +189,4 @@ const EditarAtivoPage: React.FC = () => {
   );
 };
 
-export default EditarAtivoPage;
+export default EditAssetPage;

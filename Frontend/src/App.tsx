@@ -3,12 +3,12 @@ import { Routes, Route } from "react-router";
 import LoginPage from "./pages/LoginPage"; // Assuming LoginPage.tsx is in src/pages/
 import RegistrationPage from "./pages/RegistrationPage"; // Import the new page
 import MainPage from "./pages/MainPage";
-import EditarAtivoPage from "./pages/EditarAtivoPage";
-import EditarManutencaoPage from "./pages/EditarManutencaoPage";
-import DetalhesAtivoPage from "./pages/DetalhesAtivoPage"; // Import the new page
-import ListaAtivosPage from "./pages/ListaAtivosPage";
-import CriarAtivoPage from "./pages/CriarAtivoPage";
-import CriarManutencaoPage from "./pages/CriarManutencaoPage";
+import EditAssetPage from "./pages/EditAssetPage";
+import EditMaintenancePage from "./pages/EditMaintenancePage";
+import AssetDetailsPage from "./pages/AssetDetailsPage"; // Import the new page
+import AssetListPage from "./pages/AssetListPage";
+import CreateAssetPage from "./pages/CreateAssetPage";
+import CreateMaintenancePage from "./pages/CreateMaintenancePage";
 import MainAppBar from "./components/MainAppBar";
 
 import { UserContext } from "./contexts/UserContext";
@@ -51,22 +51,22 @@ function App() {
       <MainAppBar />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegistrationPage />} />
+        <Route path="/registro" element={<RegistrationPage />} />
         <Route path="/" element={<MainPage />} />
-        <Route path="/ativos/:ativoId/editar" element={<EditarAtivoPage />} />
+        <Route path="/ativos/:ativoId/editar" element={<EditAssetPage />} />
         <Route
           path="/ativos/:ativoId/manutencoes/:manutencaoId/editar"
-          element={<EditarManutencaoPage />}
+          element={<EditMaintenancePage />}
         />
         <Route
           path="/ativos/:ativoId/detalhes"
-          element={<DetalhesAtivoPage />}
+          element={<AssetDetailsPage />}
         />
-        <Route path="/ativos" element={<ListaAtivosPage />} />
-        <Route path="/ativos/criar" element={<CriarAtivoPage />} />
+        <Route path="/ativos" element={<AssetListPage />} />
+        <Route path="/ativos/criar" element={<CreateAssetPage />} />
         <Route
           path="/ativos/:ativoId/manutencoes/criar"
-          element={<CriarManutencaoPage />}
+          element={<CreateMaintenancePage />}
         />
       </Routes>
     </UserContext.Provider>

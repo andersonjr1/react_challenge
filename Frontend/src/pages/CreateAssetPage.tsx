@@ -7,7 +7,7 @@ import AssetForm from "../components/AssetForm"; // Import the reusable AssetFor
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
-const CriarAtivoPage: React.FC = () => {
+const CreateAssetPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [name, setName] = useState<string>("");
@@ -144,4 +144,4 @@ const CriarAtivoPage: React.FC = () => {
   );
 };
 
-export default CriarAtivoPage;
+export default CreateAssetPage;

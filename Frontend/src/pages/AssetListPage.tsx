@@ -16,7 +16,7 @@ import ConfirmationDialog from "../components/ConfirmationDialog"; // Import the
 
 const API_BASE_URL = "http://localhost:3000/api"; // Sua URL base da API
 
-const ListaAtivosPage: React.FC = () => {
+const AssetListPage: React.FC = () => {
   const navigate = useNavigate();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -185,4 +185,4 @@ const ListaAtivosPage: React.FC = () => {
   );
 };
 
-export default ListaAtivosPage;
+export default AssetListPage;

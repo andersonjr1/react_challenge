@@ -15,7 +15,7 @@ import MaintenanceForm from "../components/MaintenanceForm"; // Import the new M
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
-const EditarManutencaoPage: React.FC = () => {
+const EditMaintenancePage: React.FC = () => {
   const { ativoId, manutencaoId } = useParams<{
     ativoId: string;
     manutencaoId: string;
@@ -298,4 +298,4 @@ const EditarManutencaoPage: React.FC = () => {
   );
 };
 
-export default EditarManutencaoPage;
+export default EditMaintenancePage;
