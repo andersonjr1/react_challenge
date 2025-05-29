@@ -13,22 +13,8 @@ import {
   Checkbox,
 } from "@mui/material";
 
-// Definindo a interface para a Manutenção, baseada no seu retorno de API
-interface Maintenance {
-  id: string;
-  asset_id: string;
-  service: string;
-  expected_at: string; // ISO date string or YYYY-MM-DD
-  performed_at: string | null; // ISO date string or YYYY-MM-DD, can be null
-  description: string;
-  done: boolean;
-  created_at: string;
-  updated_at: string;
-  condition_next_maintenance?: string | null;
-  date_next_maintenance?: string | null;
-}
-
 import { UserContext } from "../contexts/UserContext";
+import type { Maintenance } from "../types/types"; // Import the Maintenance interface
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 

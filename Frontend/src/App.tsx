@@ -12,7 +12,7 @@ import CriarManutencaoPage from "./pages/CriarManutencaoPage";
 import MainAppBar from "./components/MainAppBar";
 
 import { UserContext } from "./contexts/UserContext";
-import type { UserData, UserContextType } from "./contexts/UserContext";
+import type { UserData, UserContextType } from "./types/types";
 import { useState, useEffect } from "react";
 
 function App() {

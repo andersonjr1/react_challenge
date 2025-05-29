@@ -1,18 +1,8 @@
 import { createContext } from "react";
 
-// Define the shape of the user data
-export interface UserData {
-  id: string | null; // Assuming ID can be a string or null when not logged in
-  name: string;
-  email: string;
-}
+import type { UserContextType } from "../types/types";
 
-// Define the shape of the context value
-export interface UserContextType extends UserData {
-  isLoggedIn: boolean;
-  login: (userData: UserData) => void;
-  logout: () => void;
-}
+// Define the shape of the user data
 
 // 1. Create the Context
 // We can provide a default value, which is useful for testing or when a

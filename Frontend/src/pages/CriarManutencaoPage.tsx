@@ -13,18 +13,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { UserContext } from "../contexts/UserContext";
-
-// Não precisamos da interface Maintenance completa aqui, apenas os campos que vamos enviar
-interface NewMaintenanceData {
-  asset_id: string;
-  service: string;
-  expected_at: string | null; // YYYY-MM-DD ou ISO
-  performed_at?: string | null; // Opcional na criação, YYYY-MM-DD ou ISO
-  description: string;
-  done: boolean;
-  condition_next_maintenance?: string | null;
-  date_next_maintenance?: string | null; // YYYY-MM-DD ou ISO
-}
+import type { NewMaintenanceData } from "../types/types"; // Import the interface
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 

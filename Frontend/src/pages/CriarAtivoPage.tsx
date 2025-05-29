@@ -12,12 +12,7 @@ import {
 } from "@mui/material";
 
 import { UserContext } from "../contexts/UserContext";
-
-// Não precisamos da interface Asset completa aqui, apenas os campos que vamos enviar
-interface NewAssetData {
-  name: string;
-  description: string;
-}
+import type { NewAssetData } from "../types/types"; // Import the interface
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 

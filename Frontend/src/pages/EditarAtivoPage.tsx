@@ -12,16 +12,7 @@ import {
 } from "@mui/material";
 
 import { UserContext } from "../contexts/UserContext";
-
-// Definindo a interface para o ativo, baseada no seu retorno de API
-interface Asset {
-  id: string;
-  user_id: string;
-  name: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { Asset } from "../types/types"; // Import the Asset interface
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
