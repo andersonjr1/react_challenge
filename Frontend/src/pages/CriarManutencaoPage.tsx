@@ -54,16 +54,30 @@ const CriarManutencaoPage: React.FC = () => {
       return;
     }
 
+    // Ensure performed_at is cleared if done is false,
+    // and done is true if performed_at has a value.
+    // This handles cases where state might be inconsistent before submission,
+    // though the new handlers should prevent this.
+    const finalPerformedAt = performedAt;
+    let finalDone = done;
+
+    if (performedAt && !done) {
+      finalDone = true; // If performedAt has a date, it must be done
+    } else if (!performedAt && done) {
+      // This case is less likely with the new handlers but good for robustness
+      // If it's marked done but no performedAt date, it's an inconsistency we might want to flag or handle
+    }
+
     const newMaintenanceData: NewMaintenanceData = {
       asset_id: ativoId,
       service: service.trim(),
       expected_at: formatDateInputToIso(expectedAt),
       // performed_at só é enviado se preenchido
       ...(performedAt && {
-        performed_at: formatDateInputToIso(performedAt),
+        performed_at: formatDateInputToIso(finalPerformedAt),
       }),
       description: description.trim(),
-      done: done,
+      done: finalDone,
       ...(conditionNextMaintenance.trim() && {
         condition_next_maintenance: conditionNextMaintenance.trim(),
       }),
@@ -110,6 +124,22 @@ const CriarManutencaoPage: React.FC = () => {
     navigate(-1); // Volta para a página anterior
   };
 
+  const handlePerformedAtChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPerformedAt = e.target.value;
+    setPerformedAt(newPerformedAt);
+    if (newPerformedAt) {
+      setDone(true); // Automatically check "done" if a date is entered
+    }
+  };
+
+  const handleDoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDone = e.target.checked;
+    setDone(newDone);
+    if (!newDone) {
+      setPerformedAt(""); // Clear performedAt if "done" is unchecked
+    }
+  };
+
   return (
     <Container component="main" maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
       <Box
@@ -143,12 +173,12 @@ const CriarManutencaoPage: React.FC = () => {
           onServiceChange={(e) => setService(e.target.value)}
           expectedAt={expectedAt}
           onExpectedAtChange={(e) => setExpectedAt(e.target.value)}
-          performedAt={performedAt}
-          onPerformedAtChange={(e) => setPerformedAt(e.target.value)}
+          performedAt={performedAt} // Pass the state
+          onPerformedAtChange={handlePerformedAtChange} // Use the new handler
           description={description}
           onDescriptionChange={(e) => setDescription(e.target.value)}
-          done={done}
-          onDoneChange={(e) => setDone(e.target.checked)}
+          done={done} // Pass the state
+          onDoneChange={handleDoneChange} // Use the new handler
           conditionNextMaintenance={conditionNextMaintenance}
           onConditionNextMaintenanceChange={(e) =>
             setConditionNextMaintenance(e.target.value)

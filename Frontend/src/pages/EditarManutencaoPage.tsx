@@ -121,31 +121,62 @@ const EditarManutencaoPage: React.FC = () => {
       setLoading(false);
       return;
     }
+    // Ensure performed_at is cleared if done is false,
+    // and done is true if performed_at has a value.
+    const finalPerformedAt = performedAt;
+    let finalDone = done;
+
+    if (performedAt && !done) {
+      finalDone = true;
+    } else if (!performedAt && done && !initialLoading) {
+      // Only clear performedAt if user unchecks 'done' after initial load
+      // This scenario should ideally be handled by onDoneChange,
+      // but as a safeguard for submission:
+      // If 'done' is true but 'performedAt' is empty, it's an inconsistency.
+      // For editing, we might allow 'done' to be true without a date if it was like that initially.
+      // However, the new onDoneChange handler will clear performedAt if done is unchecked.
+    }
 
     try {
-      // Sua API de exemplo para update de manutenção é {{ip}}/api/ativos/:id/manutencoes
-      // Mas para uma manutenção específica, geralmente é /api/manutencoes/:id
-      // Vamos assumir uma rota mais RESTful para PUT/PATCH em uma manutenção específica:
-      // {{ip}}/api/manutencoes/:manutencaoId
+      // API endpoint for updating a specific maintenance
+      console.log({
+        service: service.trim(),
+        expected_at: formatDateInputToIso(expectedAt),
+        performed_at: finalPerformedAt.trim()
+          ? formatDateInputToIso(finalPerformedAt)
+          : null,
+        description: description.trim(),
+        done: finalDone,
+        condition_next_maintenance: conditionNextMaintenance.trim()
+          ? conditionNextMaintenance.trim()
+          : null,
+        // Send date_next_maintenance only if it has a value
+        ...(dateNextMaintenance && {
+          date_next_maintenance: formatDateInputToIso(dateNextMaintenance),
+        }),
+      });
       const response = await fetch(
         `${API_BASE_URL}/manutencoes/${manutencaoId}`,
         {
           method: "PUT", // Ou 'PATCH', dependendo da sua API
           headers: {
             "Content-Type": "application/json",
-            // Inclua o token de autenticação se sua API exigir
-            // 'Authorization': `Bearer ${seuTokenDeAutenticacao}`,
           },
           body: JSON.stringify({
             service: service.trim(),
             expected_at: formatDateInputToIso(expectedAt),
-            performed_at: formatDateInputToIso(performedAt),
+            performed_at: finalPerformedAt.trim()
+              ? formatDateInputToIso(finalPerformedAt)
+              : null,
             description: description.trim(),
-            done: done,
+            done: finalDone,
             condition_next_maintenance: conditionNextMaintenance.trim()
               ? conditionNextMaintenance.trim()
               : null,
-            date_next_maintenance: formatDateInputToIso(dateNextMaintenance),
+            // Send date_next_maintenance only if it has a value
+            ...(dateNextMaintenance && {
+              date_next_maintenance: formatDateInputToIso(dateNextMaintenance),
+            }),
           }),
           credentials: "include",
         }
@@ -176,6 +207,22 @@ const EditarManutencaoPage: React.FC = () => {
   // Função para lidar com o cancelamento
   const handleCancel = () => {
     navigate(-1); // Volta para a página anterior
+  };
+
+  const handlePerformedAtChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPerformedAt = e.target.value;
+    setPerformedAt(newPerformedAt);
+    if (newPerformedAt) {
+      setDone(true); // Automatically check "done" if a date is entered
+    }
+  };
+
+  const handleDoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDone = e.target.checked;
+    setDone(newDone);
+    if (!newDone) {
+      setPerformedAt(""); // Clear performedAt if "done" is unchecked
+    }
   };
 
   if (initialLoading) {
@@ -227,12 +274,12 @@ const EditarManutencaoPage: React.FC = () => {
           onServiceChange={(e) => setService(e.target.value)}
           expectedAt={expectedAt}
           onExpectedAtChange={(e) => setExpectedAt(e.target.value)}
-          performedAt={performedAt}
-          onPerformedAtChange={(e) => setPerformedAt(e.target.value)}
+          performedAt={performedAt} // Pass the state
+          onPerformedAtChange={handlePerformedAtChange} // Use the new handler
           description={description}
           onDescriptionChange={(e) => setDescription(e.target.value)}
-          done={done}
-          onDoneChange={(e) => setDone(e.target.checked)}
+          done={done} // Pass the state
+          onDoneChange={handleDoneChange} // Use the new handler
           conditionNextMaintenance={conditionNextMaintenance}
           onConditionNextMaintenanceChange={(e) =>
             setConditionNextMaintenance(e.target.value)
