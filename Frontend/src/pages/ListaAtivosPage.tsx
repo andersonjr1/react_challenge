@@ -7,25 +7,12 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
   Button,
-  Divider,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import InfoIcon from "@mui/icons-material/Info";
 import { UserContext } from "../contexts/UserContext";
+import AssetList from "../components/AssetList"; // Import the new AssetList component
+import ConfirmationDialog from "../components/ConfirmationDialog"; // Import the new ConfirmationDialog component
 
 const API_BASE_URL = "http://localhost:3000/api"; // Sua URL base da API
 
@@ -177,89 +164,23 @@ const ListaAtivosPage: React.FC = () => {
         </Button>
       </Box>
 
-      {assets.length === 0 ? (
-        <Typography variant="subtitle1" sx={{ textAlign: "center", mt: 4 }}>
-          Nenhum ativo encontrado. Comece adicionando um novo!
-        </Typography>
-      ) : (
-        <List
-          sx={{ bgcolor: "background.paper", borderRadius: 2, boxShadow: 3 }}
-        >
-          {assets.map((asset, index) => (
-            <React.Fragment key={asset.id}>
-              <ListItem>
-                <ListItemText
-                  primary={asset.name}
-                  secondary={asset.description || "Sem descrição"}
-                />
-                <ListItemSecondaryAction>
-                  <Tooltip title="Ver Detalhes/Histórico">
-                    <IconButton
-                      edge="end"
-                      aria-label="details"
-                      onClick={() => handleViewDetails(asset.id)}
-                    >
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Editar Ativo">
-                    <IconButton
-                      edge="end"
-                      aria-label="edit"
-                      sx={{ ml: 1 }}
-                      onClick={() => handleEditAsset(asset.id)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Remover Ativo">
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      sx={{ ml: 1 }}
-                      onClick={() => handleDeleteClick(asset.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ListItemSecondaryAction>
-              </ListItem>
-              {index < assets.length - 1 && <Divider component="li" />}
-            </React.Fragment>
-          ))}
-        </List>
-      )}
+      <AssetList
+        assets={assets}
+        onViewDetails={handleViewDetails}
+        onEditAsset={handleEditAsset}
+        onDeleteAsset={handleDeleteClick} // This will now open the dialog
+      />
 
       {/* Diálogo de Confirmação de Exclusão */}
-      <Dialog
+      <ConfirmationDialog
         open={deleteConfirmationOpen}
         onClose={handleCancelDelete}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Confirmar Exclusão"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Tem certeza de que deseja remover este ativo? Esta ação não pode ser
-            desfeita.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete} disabled={loading}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            autoFocus
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={24} /> : "Remover"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleConfirmDelete}
+        title="Confirmar Exclusão"
+        contentText="Tem certeza de que deseja remover este ativo? Esta ação não pode ser desfeita."
+        confirmText="Remover"
+        isLoading={loading} // Pass loading state to disable buttons during operation
+      />
     </Container>
   );
 };

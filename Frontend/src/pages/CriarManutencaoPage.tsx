@@ -1,32 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router"; // Use react-router-dom
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  CircularProgress,
-  Alert,
-  Grid,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
+import { Container, Box, Typography, Alert } from "@mui/material";
 import { UserContext } from "../contexts/UserContext";
 import type { NewMaintenanceData } from "../types/types"; // Import the interface
+import MaintenanceForm from "../components/MaintenanceForm"; // Import the reusable MaintenanceForm
+import { formatDateInputToIso } from "../utils/dateUtils"; // Import the utility function
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
-
-// Função auxiliar para formatar YYYY-MM-DD para ISO string (para API, se necessário)
-// Se a API aceitar YYYY-MM-DD diretamente, esta função pode apenas retornar o valor.
-const formatDateInputToApiFormat = (
-  dateInput: string | null
-): string | null => {
-  if (!dateInput) return null;
-  // Exemplo: se a API espera YYYY-MM-DD, retorna como está.
-  // Se a API espera ISO string completa: return new Date(dateInput).toISOString();
-  return dateInput;
-};
 
 const CriarManutencaoPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>(); // Apenas ativoId é necessário
@@ -77,10 +57,10 @@ const CriarManutencaoPage: React.FC = () => {
     const newMaintenanceData: NewMaintenanceData = {
       asset_id: ativoId,
       service: service.trim(),
-      expected_at: formatDateInputToApiFormat(expectedAt),
+      expected_at: formatDateInputToIso(expectedAt),
       // performed_at só é enviado se preenchido
       ...(performedAt && {
-        performed_at: formatDateInputToApiFormat(performedAt),
+        performed_at: formatDateInputToIso(performedAt),
       }),
       description: description.trim(),
       done: done,
@@ -88,7 +68,7 @@ const CriarManutencaoPage: React.FC = () => {
         condition_next_maintenance: conditionNextMaintenance.trim(),
       }),
       ...(dateNextMaintenance && {
-        date_next_maintenance: formatDateInputToApiFormat(dateNextMaintenance),
+        date_next_maintenance: formatDateInputToIso(dateNextMaintenance),
       }),
     };
 
@@ -158,129 +138,30 @@ const CriarManutencaoPage: React.FC = () => {
           </Alert>
         )}
 
-        <Box
-          component="form"
+        <MaintenanceForm
+          service={service}
+          onServiceChange={(e) => setService(e.target.value)}
+          expectedAt={expectedAt}
+          onExpectedAtChange={(e) => setExpectedAt(e.target.value)}
+          performedAt={performedAt}
+          onPerformedAtChange={(e) => setPerformedAt(e.target.value)}
+          description={description}
+          onDescriptionChange={(e) => setDescription(e.target.value)}
+          done={done}
+          onDoneChange={(e) => setDone(e.target.checked)}
+          conditionNextMaintenance={conditionNextMaintenance}
+          onConditionNextMaintenanceChange={(e) =>
+            setConditionNextMaintenance(e.target.value)
+          }
+          dateNextMaintenance={dateNextMaintenance}
+          onDateNextMaintenanceChange={(e) =>
+            setDateNextMaintenance(e.target.value)
+          }
           onSubmit={handleSubmit}
-          noValidate
-          sx={{ mt: 1, width: "100%" }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="service"
-            label="Serviço"
-            name="service"
-            autoComplete="off"
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-            error={!service.trim() && !!error}
-            helperText={
-              !service.trim() && !!error ? "Serviço é obrigatório." : ""
-            }
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="expected_at"
-            label="Data Esperada"
-            name="expected_at"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={expectedAt}
-            onChange={(e) => setExpectedAt(e.target.value)}
-            error={!expectedAt && !!error}
-            helperText={
-              !expectedAt && !!error ? "Data esperada é obrigatória." : ""
-            }
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="performed_at"
-            label="Data Realizada (Opcional)"
-            name="performed_at"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={performedAt}
-            onChange={(e) => setPerformedAt(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Descrição (Opcional)"
-            name="description"
-            autoComplete="off"
-            multiline
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="condition_next_maintenance"
-            label="Condição Próxima Manutenção (Opcional)"
-            name="condition_next_maintenance"
-            autoComplete="off"
-            multiline
-            rows={2}
-            value={conditionNextMaintenance}
-            onChange={(e) => setConditionNextMaintenance(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="date_next_maintenance"
-            label="Data Próxima Manutenção (Opcional)"
-            name="date_next_maintenance"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={dateNextMaintenance}
-            onChange={(e) => setDateNextMaintenance(e.target.value)}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={done}
-                onChange={(e) => setDone(e.target.checked)}
-                name="done"
-                color="primary"
-              />
-            }
-            label="Concluída"
-            sx={{ mt: 1, mb: 2, display: "block" }} // display block para ocupar a largura
-          />
-
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            {" "}
-            {/* Ajustado mt para 2 */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ py: 1.5 }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "Criar Manutenção"}
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                sx={{ py: 1.5 }}
-                onClick={handleCancel}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+          onCancel={handleCancel}
+          isLoading={loading}
+          submitButtonText="Criar Manutenção"
+        />
       </Box>
     </Container>
   );

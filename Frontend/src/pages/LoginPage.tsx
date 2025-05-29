@@ -1,17 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate, Link as RouterLink } from "react-router"; // Renamed Link to avoid conflict
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  CircularProgress,
-  Alert,
-  Link as MuiLink, // MUI Link
-  Grid,
-} from "@mui/material";
+import { useNavigate } from "react-router";
+import { Container, Box, Typography } from "@mui/material";
 import { UserContext } from "../contexts/UserContext"; // Import UserContext
+import LoginForm from "../components/LoginForm"; // Import the new LoginForm component
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -82,68 +73,15 @@ const LoginPage: React.FC = () => {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
-        <Box
-          component="form"
+        <LoginForm
+          email={email}
+          onEmailChange={(e) => setEmail(e.target.value)}
+          password={password}
+          onPasswordChange={(e) => setPassword(e.target.value)}
           onSubmit={handleLoginSubmit}
-          noValidate
-          sx={{ mt: 1 }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="E-mail"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={!!error && error.toLowerCase().includes("email")} // Example: highlight if error mentions email
-            helperText={
-              !!error && error.toLowerCase().includes("email") ? error : ""
-            }
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Senha"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!error && error.toLowerCase().includes("senha")} // Example: highlight if error mentions password
-            helperText={
-              !!error && error.toLowerCase().includes("senha") ? error : ""
-            }
-          />
-          {error &&
-            !error.toLowerCase().includes("email") &&
-            !error.toLowerCase().includes("senha") && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {error}
-              </Alert>
-            )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={24} /> : "Entrar"}
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid>
-              <MuiLink component={RouterLink} to="/register" variant="body2">
-                Não tem uma conta? Criar Conta
-              </MuiLink>
-            </Grid>
-          </Grid>
-        </Box>
+          isLoading={isLoading}
+          error={error}
+        />
       </Box>
     </Container>
   );

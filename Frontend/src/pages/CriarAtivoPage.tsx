@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router"; // Use react-router-dom for useNavigate
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  CircularProgress,
-  Alert,
-  Grid,
-} from "@mui/material";
-
+import { Container, Box, Typography, Alert } from "@mui/material";
 import { UserContext } from "../contexts/UserContext";
 import type { NewAssetData } from "../types/types"; // Import the interface
+import AssetForm from "../components/AssetForm"; // Import the reusable AssetForm
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
@@ -129,77 +120,25 @@ const CriarAtivoPage: React.FC = () => {
           </Alert>
         )}
 
-        <Box
-          component="form"
+        <AssetForm
+          name={name}
+          onNameChange={(e) => setName(e.target.value)}
+          description={description}
+          onDescriptionChange={(e) => setDescription(e.target.value)}
           onSubmit={handleSubmit}
-          noValidate
-          sx={{ mt: 1, width: "100%" }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Nome do Ativo"
-            name="name"
-            autoComplete="off"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={!name.trim() && !description.trim() && !!error} // Destaca se ambos estiverem vazios e houver erro
-            helperText={
-              !name.trim() && !description.trim() && !!error
-                ? "Nome ou Descrição são obrigatórios."
-                : ""
-            }
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Descrição Detalhada (Modelo, Placa, Localização etc.)"
-            name="description"
-            autoComplete="off"
-            multiline
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            error={!name.trim() && !description.trim() && !!error} // Destaca se ambos estiverem vazios e houver erro
-            helperText={
-              !name.trim() && !description.trim() && !!error
-                ? "Nome ou Descrição são obrigatórios."
-                : ""
-            }
-          />
-
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              {" "}
-              {/* Use item and xs/sm for Grid */}
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ py: 1.5 }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "Criar Ativo"}
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              {" "}
-              {/* Use item and xs/sm for Grid */}
-              <Button
-                fullWidth
-                variant="outlined"
-                sx={{ py: 1.5 }}
-                onClick={handleCancel}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+          onCancel={handleCancel}
+          isLoading={loading}
+          submitButtonText="Criar Ativo"
+          // Pass error messages for individual fields if needed,
+          // or rely on the general error Alert above the form.
+          // The existing logic for error/helperText on TextFields was tied to the general 'error' state.
+          nameError={
+            !name.trim() && !description.trim() && error ? error : undefined
+          }
+          descriptionError={
+            !name.trim() && !description.trim() && error ? error : undefined
+          }
+        />
       </Box>
     </Container>
   );

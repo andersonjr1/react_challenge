@@ -3,42 +3,17 @@ import { useParams, useNavigate } from "react-router";
 import {
   Container,
   Box,
-  TextField,
-  Button,
   Typography,
   CircularProgress,
   Alert,
-  Grid,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 
 import { UserContext } from "../contexts/UserContext";
 import type { Maintenance } from "../types/types"; // Import the Maintenance interface
+import { formatIsoToDateInput, formatDateInputToIso } from "../utils/dateUtils"; // Import date utility functions
+import MaintenanceForm from "../components/MaintenanceForm"; // Import the new MaintenanceForm component
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
-
-const formatIsoToDateInput = (isoString: string | null): string => {
-  if (!isoString) return "";
-  try {
-    const date = new Date(isoString);
-    if (isNaN(date.getTime())) return "";
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  } catch (e) {
-    console.error("Error formatting date:", e);
-    return "";
-  }
-};
-
-const formatDateInputToIso = (dateInput: string | null): string | null => {
-  if (!dateInput) return null;
-  // Assuming API expects YYYY-MM-DD as is or can parse it
-  return dateInput; // For now, send as YYYY-MM-DD
-  // If API needs full ISO: return new Date(dateInput).toISOString();
-};
 
 const EditarManutencaoPage: React.FC = () => {
   const { ativoId, manutencaoId } = useParams<{
@@ -247,120 +222,30 @@ const EditarManutencaoPage: React.FC = () => {
           </Alert>
         )}
 
-        <Box
-          component="form"
+        <MaintenanceForm
+          service={service}
+          onServiceChange={(e) => setService(e.target.value)}
+          expectedAt={expectedAt}
+          onExpectedAtChange={(e) => setExpectedAt(e.target.value)}
+          performedAt={performedAt}
+          onPerformedAtChange={(e) => setPerformedAt(e.target.value)}
+          description={description}
+          onDescriptionChange={(e) => setDescription(e.target.value)}
+          done={done}
+          onDoneChange={(e) => setDone(e.target.checked)}
+          conditionNextMaintenance={conditionNextMaintenance}
+          onConditionNextMaintenanceChange={(e) =>
+            setConditionNextMaintenance(e.target.value)
+          }
+          dateNextMaintenance={dateNextMaintenance}
+          onDateNextMaintenanceChange={(e) =>
+            setDateNextMaintenance(e.target.value)
+          }
           onSubmit={handleSubmit}
-          noValidate
-          sx={{ mt: 1, width: "100%" }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="service"
-            label="Serviço"
-            name="service"
-            autoComplete="off"
-            value={service}
-            onChange={(e) => setService(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="expected_at"
-            label="Data Esperada"
-            name="expected_at"
-            type="date" // Define o tipo para um seletor de data
-            InputLabelProps={{ shrink: true }} // Garante que o label não sobreponha a data
-            value={expectedAt}
-            onChange={(e) => setExpectedAt(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="performed_at"
-            label="Data Realizada"
-            name="performed_at"
-            type="date" // Define o tipo para um seletor de data
-            InputLabelProps={{ shrink: true }}
-            value={performedAt}
-            onChange={(e) => setPerformedAt(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Descrição"
-            name="description"
-            autoComplete="off"
-            multiline
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="condition_next_maintenance"
-            label="Condição Próxima Manutenção (Opcional)"
-            name="condition_next_maintenance"
-            autoComplete="off"
-            multiline
-            rows={2}
-            value={conditionNextMaintenance}
-            onChange={(e) => setConditionNextMaintenance(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="date_next_maintenance"
-            label="Data Próxima Manutenção (Opcional)"
-            name="date_next_maintenance"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={dateNextMaintenance}
-            onChange={(e) => setDateNextMaintenance(e.target.value)}
-          />
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={done}
-                onChange={(e) => setDone(e.target.checked)}
-                name="done"
-                color="primary"
-              />
-            }
-            label="Concluída"
-            sx={{ mt: 1, mb: 2 }}
-          />
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            {/* Restaurado o prop 'item' para o funcionamento correto do Grid */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ py: 1.5 }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "Salvar"}
-              </Button>
-            </Grid>
-            {/* Restaurado o prop 'item' para o funcionamento correto do Grid */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                sx={{ py: 1.5 }}
-                onClick={handleCancel}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+          onCancel={handleCancel}
+          isLoading={loading}
+          submitButtonText="Salvar Alterações"
+        />
       </Box>
     </Container>
   );

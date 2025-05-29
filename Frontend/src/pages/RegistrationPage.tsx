@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link as RouterLink, useNavigate } from "react-router"; // Corrected import and aliased Link
-import {
-  Container,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  CircularProgress,
-  Alert,
-  Link as MuiLink, // MUI Link
-  Grid,
-} from "@mui/material";
+import { useNavigate } from "react-router"; // Corrected import
+import { Container, Box, Typography } from "@mui/material";
 import { UserContext } from "../contexts/UserContext";
+import RegistrationForm from "../components/RegistrationForm"; // Import the new component
 
 const RegistrationPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -78,69 +69,17 @@ const RegistrationPage: React.FC = () => {
         <Typography component="h1" variant="h5">
           Criar Conta
         </Typography>
-        <Box
-          component="form"
+        <RegistrationForm
+          name={name}
+          onNameChange={(e) => setName(e.target.value)}
+          email={email}
+          onEmailChange={(e) => setEmail(e.target.value)}
+          password={password}
+          onPasswordChange={(e) => setPassword(e.target.value)}
           onSubmit={handleRegistrationSubmit}
-          noValidate
-          sx={{ mt: 3 }} // Increased top margin for the form
-        >
-          <TextField
-            autoComplete="name"
-            margin="normal"
-            name="name"
-            required
-            fullWidth
-            id="name"
-            label="Nome Completo"
-            autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            required
-            fullWidth
-            margin="normal"
-            id="email"
-            label="E-mail"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            required
-            fullWidth
-            margin="normal"
-            name="password"
-            label="Senha"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error && (
-            <Alert severity="error" sx={{ mt: 2, width: "100%" }}>
-              {error}
-            </Alert>
-          )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={24} /> : "Cadastrar"}
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid>
-              <MuiLink component={RouterLink} to="/login" variant="body2">
-                Já tem uma conta? Faça login
-              </MuiLink>
-            </Grid>
-          </Grid>
-        </Box>
+          isLoading={isLoading}
+          error={error}
+        />
       </Box>
     </Container>
   );

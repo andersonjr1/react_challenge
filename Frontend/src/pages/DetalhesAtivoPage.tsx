@@ -3,28 +3,18 @@ import { useParams, useNavigate } from "react-router"; // Use react-router-dom f
 import {
   Container,
   Typography,
-  Box,
   CircularProgress,
   Alert,
   Paper,
-  List,
-  ListItem,
-  ListItemText,
   Divider,
-  Button, // Import Button for "Editar Ativo"
-  IconButton, // Import IconButton for "Editar Manutenção"
-  Dialog, // Import Dialog components for confirmation
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit"; // Import EditIcon for the buttons
-import AddIcon from "@mui/icons-material/Add"; // Import AddIcon for the create button
-import DeleteIcon from "@mui/icons-material/Delete"; // Import DeleteIcon for the delete button
 import { UserContext } from "../contexts/UserContext";
 
 import type { Asset, Maintenance, AssetWithMaintenances } from "../types/types"; // Adjust path if necessary
+import AssetDetailHeader from "../components/AssetDetailHeader";
+import AssetInformation from "../components/AssetInformation";
+import MaintenanceList from "../components/MaintenanceList";
+import ConfirmationDialog from "../components/ConfirmationDialog"; // Already exists, ensure it's used
 
 // --- API call functions ---
 const fetchAssetDetailsAPI = async (assetId: string): Promise<Asset> => {
@@ -77,7 +67,7 @@ const deleteMaintenanceAPI = async (
   // DELETE requests usually return 204 No Content, so no JSON to parse
 };
 
-const HistoricoAtivoPage: React.FC = () => {
+const DetalhesAtivoPage: React.FC = () => {
   const { ativoId } = useParams<{ ativoId: string }>();
   const navigate = useNavigate(); // Initialize useNavigate hook
 
@@ -241,209 +231,42 @@ const HistoricoAtivoPage: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h4" component="h1" gutterBottom>
-            Detalhes
-          </Typography>
-          <Button
-            variant="contained" // Use contained for primary action
-            startIcon={<AddIcon />}
-            onClick={handleCreateMaintenance}
-            disabled={!ativoId}
-          >
-            Manutenção
-          </Button>
-        </Box>
+        <AssetDetailHeader
+          title="Detalhes"
+          onAddMaintenanceClick={handleCreateMaintenance}
+          addMaintenanceDisabled={!ativoId}
+        />
 
-        {/* Asset Details and Edit Button */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Typography variant="h5" component="h2" gutterBottom color="primary">
-            Ativo: {asset.name}
-          </Typography>
-          <Button
-            variant="outlined"
-            startIcon={<EditIcon />}
-            onClick={handleEditAsset}
-            disabled={!ativoId}
-          >
-            Editar Ativo
-          </Button>
-        </Box>
-
-        <Typography variant="body1" color="text.secondary" gutterBottom>
-          {asset.description}
-        </Typography>
+        <AssetInformation
+          assetName={asset.name}
+          assetDescription={asset.description}
+          onEditAssetClick={handleEditAsset}
+          editAssetDisabled={!ativoId}
+        />
 
         <Divider sx={{ my: 3 }} />
 
         <Typography variant="h6" component="h3" gutterBottom>
           Manutenções Realizadas e Pendentes
         </Typography>
-
-        {asset.maintenances.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            Nenhuma manutenção registrada para este ativo.
-          </Typography>
-        ) : (
-          <List>
-            {asset.maintenances.map((maint, index) => (
-              <React.Fragment key={maint.id}>
-                <ListItem
-                  alignItems="flex-start"
-                  secondaryAction={
-                    <>
-                      <IconButton
-                        edge="end"
-                        aria-label="edit maintenance"
-                        onClick={() => handleEditMaintenance(maint.id)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete maintenance"
-                        onClick={() => handleOpenDeleteDialog(maint.id)}
-                        sx={{ ml: 1 }} // Add margin to separate from edit icon
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </>
-                  }
-                >
-                  <ListItemText
-                    primary={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center", // Align items vertically in the middle
-                        }}
-                      >
-                        <Typography
-                          component="span"
-                          variant="subtitle1"
-                          color="text.primary"
-                        >
-                          {maint.service}
-                        </Typography>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color={maint.done ? "success.main" : "warning.main"}
-                          sx={{ ml: 2 }} // Add some left margin for separation
-                        >
-                          {maint.done ? "Realizada" : "Pendente"}
-                        </Typography>
-                      </Box>
-                    }
-                    secondary={
-                      <>
-                        <Typography
-                          sx={{ display: "block" }}
-                          component="span"
-                          variant="body2"
-                          color="text.secondary"
-                        >
-                          Descrição: {maint.description || "N/A"}
-                        </Typography>
-                        <Typography
-                          sx={{ display: "block" }}
-                          component="span"
-                          variant="body2"
-                          color="text.secondary"
-                        >
-                          Prevista para:{" "}
-                          {new Date(maint.expected_at).toLocaleDateString()}
-                        </Typography>
-                        {maint.performed_at && (
-                          <Typography
-                            sx={{ display: "block" }}
-                            component="span"
-                            variant="body2"
-                            color="text.secondary"
-                          >
-                            Realizada em:{" "}
-                            {new Date(maint.performed_at).toLocaleDateString()}
-                          </Typography>
-                        )}
-                        {maint.condition_next_maintenance && (
-                          <Typography
-                            sx={{ display: "block" }}
-                            component="span"
-                            variant="body2"
-                            color="text.secondary"
-                          >
-                            Próxima Condição: {maint.condition_next_maintenance}
-                          </Typography>
-                        )}
-                        {maint.date_next_maintenance && (
-                          <Typography
-                            sx={{ display: "block" }}
-                            component="span"
-                            variant="body2"
-                            color="text.secondary"
-                          >
-                            Próxima Data:{" "}
-                            {new Date(
-                              maint.date_next_maintenance
-                            ).toLocaleDateString()}
-                          </Typography>
-                        )}
-                      </>
-                    }
-                  />
-                </ListItem>
-                {index < asset.maintenances.length - 1 && (
-                  <Divider component="li" />
-                )}
-              </React.Fragment>
-            ))}
-          </List>
-        )}
+        <MaintenanceList
+          maintenances={asset.maintenances}
+          onEditMaintenance={handleEditMaintenance}
+          onDeleteMaintenance={handleOpenDeleteDialog}
+        />
       </Paper>
       {/* Confirmation Dialog for Deleting Maintenance */}
-      <Dialog
+      <ConfirmationDialog
         open={openDeleteDialog}
         onClose={handleCloseDeleteDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Confirmar Exclusão de Manutenção"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Tem certeza que deseja excluir esta manutenção? Esta ação não pode
-            ser desfeita.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog}>Cancelar</Button>
-          <Button
-            onClick={handleConfirmDeleteMaintenance}
-            color="error"
-            autoFocus
-          >
-            Excluir
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleConfirmDeleteMaintenance}
+        title="Confirmar Exclusão de Manutenção"
+        contentText="Tem certeza que deseja excluir esta manutenção? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+      />
     </Container>
   );
 };
 
-export default HistoricoAtivoPage;
+export default DetalhesAtivoPage;

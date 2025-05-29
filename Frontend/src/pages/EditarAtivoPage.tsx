@@ -3,16 +3,13 @@ import { useParams, useNavigate } from "react-router";
 import {
   Container,
   Box,
-  TextField,
-  Button,
   Typography,
   CircularProgress,
   Alert,
-  Grid,
 } from "@mui/material";
-
 import { UserContext } from "../contexts/UserContext";
 import type { Asset } from "../types/types"; // Import the Asset interface
+import AssetForm from "../components/AssetForm"; // Import the new AssetForm component
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 
@@ -168,73 +165,25 @@ const EditarAtivoPage: React.FC = () => {
           </Alert>
         )}
 
-        <Box
-          component="form"
+        <AssetForm
+          name={name}
+          onNameChange={(e) => setName(e.target.value)}
+          description={description}
+          onDescriptionChange={(e) => setDescription(e.target.value)}
           onSubmit={handleSubmit}
-          noValidate
-          sx={{ mt: 1, width: "100%" }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Nome do Ativo"
-            name="name"
-            autoComplete="off"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={!name.trim() && !description.trim() && !!error} // Destaca se ambos estiverem vazios e houver erro
-            helperText={
-              !name.trim() && !description.trim() && !!error
-                ? "Nome ou Descrição são obrigatórios."
-                : ""
-            }
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="description"
-            label="Descrição Detalhada (Modelo, Placa, Localização etc.)"
-            name="description"
-            autoComplete="off"
-            multiline
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            error={!name.trim() && !description.trim() && !!error} // Destaca se ambos estiverem vazios e houver erro
-            helperText={
-              !name.trim() && !description.trim() && !!error
-                ? "Nome ou Descrição são obrigatórios."
-                : ""
-            }
-          />
-
-          <Grid container spacing={2} sx={{ mt: 3 }}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ py: 1.5 }}
-                disabled={loading}
-              >
-                {loading ? <CircularProgress size={24} /> : "Salvar"}
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                sx={{ py: 1.5 }}
-                onClick={handleCancel}
-                disabled={loading}
-              >
-                Cancelar
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+          onCancel={handleCancel}
+          isLoading={loading}
+          submitButtonText="Salvar Alterações"
+          // Pass error messages for individual fields if needed,
+          // or rely on the general error Alert above the form.
+          // For example, if you had specific validation for 'name':
+          nameError={
+            !name.trim() && !description.trim() && error ? error : undefined
+          }
+          descriptionError={
+            !name.trim() && !description.trim() && error ? error : undefined
+          }
+        />
       </Box>
     </Container>
   );

@@ -49,3 +49,25 @@ export const getMaintenanceStatus = (
 
   return { label: 'Agendada', color: 'info.main', isUrgent: false };
 };
+
+export const formatIsoToDateInput = (isoString: string | null | undefined): string => {
+  if (!isoString) return "";
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return ""; // Invalid date
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`; // Returns YYYY-MM-DD
+  } catch (e) {
+    console.error("Error formatting ISO string to date input:", e);
+    return "";
+  }
+};
+
+export const formatDateInputToIso = (dateInput: string | null | undefined): string | null => {
+  if (!dateInput) return null;
+  // Assuming API expects YYYY-MM-DD as is or can parse it.
+  // If API needs full ISO string: return new Date(dateInput).toISOString();
+  return dateInput; // Returns YYYY-MM-DD
+};
