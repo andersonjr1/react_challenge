@@ -54,7 +54,7 @@ const RegistrationPage: React.FC = () => {
     if (userCtx.isLoggedIn) {
       navigate("/");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   return (
     <Container component="main" maxWidth="xs">

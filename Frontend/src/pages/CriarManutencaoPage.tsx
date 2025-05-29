@@ -18,7 +18,7 @@ const CriarManutencaoPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   const [service, setService] = useState<string>("");
   const [expectedAt, setExpectedAt] = useState<string>(""); // Formato YYYY-MM-DD para input

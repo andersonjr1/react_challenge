@@ -77,7 +77,7 @@ const DetalhesAtivoPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
   const [asset, setAsset] = useState<AssetWithMaintenances | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

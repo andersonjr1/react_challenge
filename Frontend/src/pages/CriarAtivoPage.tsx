@@ -90,7 +90,7 @@ const CriarAtivoPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   return (
     <Container component="main" maxWidth="sm" sx={{ mt: 4, mb: 4 }}>

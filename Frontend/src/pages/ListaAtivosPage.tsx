@@ -60,7 +60,7 @@ const ListaAtivosPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   // Funções de navegação e ação
   const handleAddAsset = () => {

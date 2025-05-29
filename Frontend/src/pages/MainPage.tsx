@@ -10,7 +10,7 @@ const MainPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   return <AssetMaintenanceDashboard />;
 };

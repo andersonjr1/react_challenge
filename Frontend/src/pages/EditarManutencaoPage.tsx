@@ -29,7 +29,7 @@ const EditarManutencaoPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   const [service, setService] = useState<string>("");
   const [expectedAt, setExpectedAt] = useState<string>(""); // YYYY-MM-DD format for input

@@ -23,7 +23,7 @@ const EditarAtivoPage: React.FC = () => {
     if (!userCtx.isLoggedIn) {
       navigate("/login");
     }
-  }, [userCtx.isLoggedIn]);
+  }, [userCtx.isLoggedIn, navigate]);
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
