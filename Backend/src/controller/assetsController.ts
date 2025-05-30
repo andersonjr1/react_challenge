@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ErrorStatus } from '../utils/error';
 import { assetsService as service } from '../service/assetsService';
 import { CreateAssetRequestBody, UpdateAssetRequestBody } from '../types/assets';
+import jwt from 'jsonwebtoken';
 
 /**
  * Extends the Express Request interface to include the `user` object,
@@ -9,11 +10,7 @@ import { CreateAssetRequestBody, UpdateAssetRequestBody } from '../types/assets'
  * Assumes `user` object contains at least an `id`.
  */
 interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    // Include other properties from your JWT payload if needed
-    [key: string]: any;
-  };
+  user?: jwt.JwtPayload;
 }
 
 const assetsController = {
@@ -24,7 +21,7 @@ const assetsController = {
     try {
       // Cast req to AuthenticatedRequest to access the user property
       const authenticatedReq = req as AuthenticatedRequest;
-      const { name, description } = req.body as Omit<CreateAssetRequestBody, 'user_id'>;
+      const { name, description } = req.body as CreateAssetRequestBody
 
       if (!authenticatedReq.user || !authenticatedReq.user.id) {
         res.status(401).json({ message: "Usuário não autenticado ou ID do usuário ausente." });

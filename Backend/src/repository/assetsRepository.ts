@@ -83,15 +83,9 @@ const assetsRepository = {
         fieldsToUpdate.push(`name = $${queryIndex++}`);
         values.push(data.name);
       }
-      if (data.hasOwnProperty('description')) { // Allows setting description to null
+      if (data.hasOwnProperty('description')) {
         fieldsToUpdate.push(`description = $${queryIndex++}`);
         values.push(data.description);
-      }
-
-      if (fieldsToUpdate.length === 0) {
-        // If no specific fields to update, we can choose to either throw an error,
-        // return the existing asset, or just update `updated_at`.
-        // Here, we'll proceed to update `updated_at` as the operation is "update".
       }
 
       fieldsToUpdate.push(`updated_at = CURRENT_TIMESTAMP`);

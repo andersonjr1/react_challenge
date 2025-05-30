@@ -2,12 +2,10 @@ import { Request, Response } from 'express';
 import { ErrorStatus } from '../utils/error';
 import { maintenanceRecordsService as service } from '../service/maintenanceRecordsService';
 import { CreateMaintenanceRecordClientBody, UpdateMaintenanceRecordRequestBody } from '../types/maintenance';
+import jwt from 'jsonwebtoken';
 
 interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    [key: string]: any;
-  };
+  user?: jwt.JwtPayload;
 }
 
 const maintenanceRecordsController = {

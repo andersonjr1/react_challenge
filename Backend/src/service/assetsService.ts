@@ -36,8 +36,6 @@ const assetsService = {
         throw error;
       }
 
-      // validateAssetDescription allows null/undefined.
-      // This check is for when a description is provided but is not a string.
       if (description !== undefined && description !== null && !validateAssetDescription(description)) {
         const error = new ErrorStatus("Descrição do ativo inválida. Se fornecida, deve ser uma string.");
         error.status = 400;
@@ -136,7 +134,7 @@ const assetsService = {
       const updatedAsset = await repository.update(id, updateData);
       if (!updatedAsset) {
         const error = new ErrorStatus("Ativo não encontrado ou nenhuma atualização necessária/realizada");
-        error.status = 404; // Or 400 if no actual data fields were changed and that's an error
+        error.status = 404;
         throw error;
       }
       return updatedAsset;

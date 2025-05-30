@@ -14,7 +14,11 @@ const authRepository = {
         );
 
         if (selectResponse.rowCount != 0) {
-          throw new Error("Conta existe!");
+          const error = new ErrorStatus(
+          "Conta existe"
+        );
+          error.status = 401;
+          throw error;
         }
 
         const insertResponse = await pool.query(
