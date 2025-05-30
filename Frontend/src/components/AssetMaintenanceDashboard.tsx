@@ -1,4 +1,3 @@
-// src/components/AssetMaintenanceDashboard.tsx
 import React, { useEffect, useState, useMemo } from "react";
 import {
   Container,
@@ -34,13 +33,10 @@ import UpdateIcon from "@mui/icons-material/Update"; // Upcoming soon
 
 import type {
   AssetWithMaintenances,
-  //   Maintenance,
+  Maintenance,
+  Asset,
   SortOption,
 } from "../types/types";
-import {
-  fetchAssetsWithMaintenances,
-  updateMaintenance as apiUpdateMaintenance,
-} from "../services/apiService";
 import { formatDate, getMaintenanceStatus } from "../utils/utils";
 import { useNavigate } from "react-router";
 
@@ -50,6 +46,8 @@ const AssetMaintenanceDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("urgency");
   const navigate = useNavigate();
+
+  const API_BASE_URL = "http://localhost:3000/api";
 
   const fetchData = async () => {
     setLoading(true);
@@ -66,13 +64,94 @@ const AssetMaintenanceDashboard: React.FC = () => {
     }
   };
 
+  async function handleResponse<T>(response: Response): Promise<T> {
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ message: "Erro desconhecido na API" }));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+    return response.json() as Promise<T>;
+  }
+
+  async function fetchAssets(): Promise<Asset[]> {
+    const response = await fetch(`${API_BASE_URL}/ativos`, {
+      credentials: "include",
+    });
+    return handleResponse<Asset[]>(response);
+  }
+
+  async function fetchMaintenancesForAsset(
+    assetId: string
+  ): Promise<Maintenance[]> {
+    const response = await fetch(
+      `${API_BASE_URL}/ativos/${assetId}/manutencoes`,
+      { credentials: "include" }
+    );
+    return handleResponse<Maintenance[]>(response);
+  }
+
+  // Function to fetch assets and their maintenances, then combine them
+  async function fetchAssetsWithMaintenances(): Promise<
+    AssetWithMaintenances[]
+  > {
+    const assets = await fetchAssets();
+    const assetsWithMaintenances: AssetWithMaintenances[] = await Promise.all(
+      assets.map(async (asset) => {
+        const maintenances = await fetchMaintenancesForAsset(asset.id);
+        const undoneMaintenances = maintenances.filter((m) => !m.done);
+
+        let mostRelevantDate: string | undefined = undefined;
+        if (undoneMaintenances.length > 0) {
+          // Sort by expected_at to find the earliest
+          undoneMaintenances.sort(
+            (a, b) =>
+              new Date(a.expected_at).getTime() -
+              new Date(b.expected_at).getTime()
+          );
+          mostRelevantDate = undoneMaintenances[0].expected_at;
+        }
+
+        return {
+          ...asset,
+          maintenances: maintenances, // Store all maintenances for history view
+          mostRelevantMaintenanceDate: mostRelevantDate,
+          hasUrgentOrUpcomingMaintenance: undoneMaintenances.length > 0, // Asset has any undone maintenance
+        };
+      })
+    );
+    // Filter out assets that don't have any upcoming/overdue maintenance
+    return assetsWithMaintenances.filter(
+      (a) => a.hasUrgentOrUpcomingMaintenance
+    );
+  }
+
+  // Placeholder for future API calls
+  async function updateMaintenance(
+    maintenanceId: string,
+    data: Partial<Maintenance>
+  ): Promise<Maintenance> {
+    const response = await fetch(
+      `${API_BASE_URL}/manutencoes/${maintenanceId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      }
+    );
+    return handleResponse<Maintenance>(response);
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
   //   const handleMarkAsDone = async (assetId: string, maintenanceId: string) => {
   const handleMarkAsDone = async (_: string, maintenanceId: string) => {
     try {
-      await apiUpdateMaintenance(maintenanceId, {
+      await updateMaintenance(maintenanceId, {
         done: true,
         performed_at: new Date().toISOString(),
       });
