@@ -4,7 +4,7 @@ import { Container, Box, Typography, Alert } from "@mui/material";
 import { UserContext } from "../contexts/UserContext";
 import type { NewMaintenanceData } from "../types/types"; // Import the interface
 import MaintenanceForm from "../components/MaintenanceForm"; // Import the reusable MaintenanceForm
-import { formatDateInputToIso } from "../utils/dateUtils"; // Import the utility function
+import { formatDateInputToIso } from "../utils/utils"; // Import the utility function
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
 

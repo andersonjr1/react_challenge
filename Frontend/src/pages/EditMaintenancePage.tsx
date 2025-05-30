@@ -10,7 +10,7 @@ import {
 
 import { UserContext } from "../contexts/UserContext";
 import type { Maintenance } from "../types/types"; // Import the Maintenance interface
-import { formatIsoToDateInput, formatDateInputToIso } from "../utils/dateUtils"; // Import date utility functions
+import { formatIsoToDateInput, formatDateInputToIso } from "../utils/utils"; // Import date utility functions
 import MaintenanceForm from "../components/MaintenanceForm"; // Import the new MaintenanceForm component
 
 const API_BASE_URL = "http://localhost:3000/api"; // Substitua pelo seu IP/domínio real
@@ -139,22 +139,6 @@ const EditMaintenancePage: React.FC = () => {
 
     try {
       // API endpoint for updating a specific maintenance
-      console.log({
-        service: service.trim(),
-        expected_at: formatDateInputToIso(expectedAt),
-        performed_at: finalPerformedAt.trim()
-          ? formatDateInputToIso(finalPerformedAt)
-          : null,
-        description: description.trim(),
-        done: finalDone,
-        condition_next_maintenance: conditionNextMaintenance.trim()
-          ? conditionNextMaintenance.trim()
-          : null,
-        // Send date_next_maintenance only if it has a value
-        ...(dateNextMaintenance && {
-          date_next_maintenance: formatDateInputToIso(dateNextMaintenance),
-        }),
-      });
       const response = await fetch(
         `${API_BASE_URL}/manutencoes/${manutencaoId}`,
         {

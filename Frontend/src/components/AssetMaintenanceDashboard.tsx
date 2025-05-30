@@ -41,7 +41,7 @@ import {
   fetchAssetsWithMaintenances,
   updateMaintenance as apiUpdateMaintenance,
 } from "../services/apiService";
-import { formatDate, getMaintenanceStatus } from "../utils/dateUtils";
+import { formatDate, getMaintenanceStatus } from "../utils/utils";
 import { useNavigate } from "react-router";
 
 const AssetMaintenanceDashboard: React.FC = () => {
@@ -71,13 +71,6 @@ const AssetMaintenanceDashboard: React.FC = () => {
   }, []);
   //   const handleMarkAsDone = async (assetId: string, maintenanceId: string) => {
   const handleMarkAsDone = async (_: string, maintenanceId: string) => {
-    // Optimistic update example (optional)
-    // const originalAssetsData = [...assetsData];
-    // setAssetsData(prevAssets => prevAssets.map(asset => asset.id === assetId ? {
-    //   ...asset,
-    //   maintenances: asset.maintenances.map(m => m.id === maintenanceId ? {...m, done: true, performed_at: new Date().toISOString()} : m)
-    // } : asset ));
-
     try {
       await apiUpdateMaintenance(maintenanceId, {
         done: true,
@@ -92,21 +85,11 @@ const AssetMaintenanceDashboard: React.FC = () => {
           ? updateError.message
           : "Falha ao atualizar manutenção."
       );
-      // Rollback optimistic update if it failed
-      // setAssetsData(originalAssetsData);
     }
   };
 
   const sortedAndFilteredAssets = useMemo(() => {
     const processedAssets = [...assetsData];
-
-    // Filter: Ensure only assets with relevant (undone) maintenances are shown
-    // This filtering is now done in fetchAssetsWithMaintenances, but kept here as an example if needed client-side
-    // processedAssets = processedAssets.filter(asset =>
-    //   asset.maintenances.some(m => !m.done)
-    // );
-
-    // Sort
     processedAssets.sort((a, b) => {
       if (sortBy === "urgency") {
         const dateA = a.mostRelevantMaintenanceDate

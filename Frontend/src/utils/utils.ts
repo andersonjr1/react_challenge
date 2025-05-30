@@ -1,5 +1,3 @@
-// src/utils/dateUtils.ts
-
 export const formatDate = (dateString: string | null | undefined): string => {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);

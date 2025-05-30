@@ -28,7 +28,6 @@ export async function fetchAssetsWithMaintenances(): Promise<AssetWithMaintenanc
   const assetsWithMaintenances: AssetWithMaintenances[] = await Promise.all(
     assets.map(async (asset) => {
       const maintenances = await fetchMaintenancesForAsset(asset.id);
-      console.log(maintenances)
       const undoneMaintenances = maintenances.filter(m => !m.done);
 
       let mostRelevantDate: string | undefined = undefined;
