@@ -1,4 +1,3 @@
-// src/types.ts
 export interface Asset {
   id: string;
   user_id: string;
