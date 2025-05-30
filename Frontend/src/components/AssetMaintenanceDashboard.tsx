@@ -5,40 +5,20 @@ import {
   CircularProgress,
   Alert,
   Grid,
-  Card,
-  CardContent,
-  CardHeader,
-  CardActions,
-  Button,
-  IconButton,
   Box,
-  Chip,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Divider,
-  Tooltip,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import InfoIcon from "@mui/icons-material/Info";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import EventBusyIcon from "@mui/icons-material/EventBusy"; // Overdue
-import EventNoteIcon from "@mui/icons-material/EventNote"; // Scheduled
-import UpdateIcon from "@mui/icons-material/Update"; // Upcoming soon
-
 import type {
   AssetWithMaintenances,
   Maintenance,
   Asset,
   SortOption,
 } from "../types/types";
-import { formatDate, getMaintenanceStatus } from "../utils/utils";
 import { useNavigate } from "react-router";
+import DashboardAssetCard from "./DashboardAssetCard"; // Import the new component
 
 const AssetMaintenanceDashboard: React.FC = () => {
   const [assetsData, setAssetsData] = useState<AssetWithMaintenances[]>([]);
@@ -167,6 +147,20 @@ const AssetMaintenanceDashboard: React.FC = () => {
     }
   };
 
+  const handleEditAsset = (assetId: string) => {
+    navigate(`/ativos/${assetId}/editar`);
+  };
+
+  const handleViewAssetDetails = (assetId: string) => {
+    navigate(`/ativos/${assetId}/detalhes`);
+  };
+
+  const handleEditMaintenance = (assetId: string, maintenanceId: string) => {
+    navigate(`/ativos/${assetId}/manutencoes/${maintenanceId}/editar`);
+  };
+
+  // handleMarkAsDone remains the same as it involves an API call
+
   const sortedAndFilteredAssets = useMemo(() => {
     const processedAssets = [...assetsData];
     processedAssets.sort((a, b) => {
@@ -247,152 +241,15 @@ const AssetMaintenanceDashboard: React.FC = () => {
         <Grid container spacing={3}>
           {sortedAndFilteredAssets.map((asset) => (
             <Grid size={{ xs: 12, md: 6, lg: 4 }} key={asset.id}>
-              <Card elevation={3}>
-                <CardHeader
-                  title={asset.name}
-                  subheader={asset.description || "Sem descrição"}
-                  action={
-                    <Tooltip title="Editar Ativo">
-                      <IconButton
-                        onClick={() => navigate(`/ativos/${asset.id}/editar`)}
-                        aria-label="edit asset"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                  }
-                />
-                <CardContent sx={{ pt: 0 }}>
-                  <Typography
-                    variant="subtitle2"
-                    gutterBottom
-                    sx={{ fontWeight: "bold" }}
-                  >
-                    Manutenções Pendentes:
-                  </Typography>
-                  <List dense sx={{ height: "120px", overflowY: "auto" }}>
-                    {asset.maintenances
-                      .filter((m) => !m.done) // Show only undone maintenances here
-                      .sort(
-                        (a, b) =>
-                          new Date(a.expected_at).getTime() -
-                          new Date(b.expected_at).getTime()
-                      ) // Sort by date, all items will be rendered for scrolling
-                      .map((maintenance) => {
-                        const status = getMaintenanceStatus(
-                          maintenance.expected_at,
-                          maintenance.done
-                        );
-                        let StatusIcon = EventNoteIcon;
-                        if (status.label === "Atrasada")
-                          StatusIcon = EventBusyIcon;
-                        else if (status.label.startsWith("Próxima"))
-                          StatusIcon = UpdateIcon;
-
-                        return (
-                          <ListItem
-                            key={maintenance.id}
-                            secondaryAction={
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "flex-start",
-                                  gap: 0.5,
-                                  height: 100,
-                                }}
-                              >
-                                <Tooltip title="Editar Manutenção">
-                                  <IconButton
-                                    size="small"
-                                    edge="end"
-                                    aria-label="edit maintenance"
-                                    onClick={() =>
-                                      navigate(
-                                        `/ativos/${asset.id}/manutencoes/${maintenance.id}/editar`
-                                      )
-                                    }
-                                  >
-                                    <EditIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                                {!maintenance.done && (
-                                  <Tooltip title="Marcar como Concluída">
-                                    <IconButton
-                                      size="small"
-                                      edge="end"
-                                      aria-label="mark as done"
-                                      onClick={() =>
-                                        handleMarkAsDone(
-                                          asset.id,
-                                          maintenance.id
-                                        )
-                                      }
-                                    >
-                                      <CheckCircleIcon fontSize="small" />
-                                    </IconButton>
-                                  </Tooltip>
-                                )}
-                              </Box>
-                            }
-                            sx={{
-                              pl: 0,
-                              "&:hover": { backgroundColor: "action.hover" },
-                            }}
-                          >
-                            <ListItemIcon sx={{ minWidth: "36px" }}>
-                              <StatusIcon sx={{ color: status.color }} />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={maintenance.service}
-                              secondary={
-                                <>
-                                  <Typography
-                                    component="span"
-                                    variant="body2"
-                                    sx={{ display: "block" }}
-                                  >
-                                    Previsto:{" "}
-                                    {formatDate(maintenance.expected_at)}
-                                  </Typography>
-                                  <Chip
-                                    label={status.label}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: status.color,
-                                      color:
-                                        status.color.includes("error") ||
-                                        status.color.includes("warning")
-                                          ? "#fff"
-                                          : "inherit",
-                                      mt: 0.5,
-                                    }}
-                                  />
-                                </>
-                              }
-                              secondaryTypographyProps={{ component: "div" }}
-                            />
-                          </ListItem>
-                        );
-                      })}
-                    {asset.maintenances.filter((m) => !m.done).length === 0 && (
-                      <ListItemText
-                        primary="Nenhuma manutenção pendente."
-                        sx={{ textAlign: "center", color: "text.secondary" }}
-                      />
-                    )}
-                  </List>
-                </CardContent>
-                <Divider />
-                <CardActions sx={{ justifyContent: "space-between" }}>
-                  <Button
-                    size="small"
-                    startIcon={<InfoIcon />}
-                    onClick={() => navigate(`/ativos/${asset.id}/detalhes`)} // Navigate to a page showing all maintenances
-                  >
-                    Detalhes do ativo
-                  </Button>
-                </CardActions>
-              </Card>
+              <DashboardAssetCard
+                asset={asset}
+                onEditAssetClick={handleEditAsset}
+                onViewAssetDetailsClick={handleViewAssetDetails}
+                onEditMaintenanceClick={handleEditMaintenance}
+                onMarkMaintenanceAsDoneClick={(maintenanceId) =>
+                  handleMarkAsDone(asset.id, maintenanceId)
+                }
+              />
             </Grid>
           ))}
         </Grid>
@@ -400,5 +257,4 @@ const AssetMaintenanceDashboard: React.FC = () => {
     </Container>
   );
 };
-
 export default AssetMaintenanceDashboard;
