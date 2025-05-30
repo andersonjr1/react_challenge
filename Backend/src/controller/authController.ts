@@ -26,8 +26,7 @@ const authController = {
             if(error instanceof ErrorStatus){
                 const statusCode = error.status || 500;
                 res.status(statusCode).json({ message: error.message });
-            }
-            if(error instanceof Error){
+            } else if(error instanceof Error){
                 res.status(500).json({ message: error.message });
             }
           }
@@ -53,8 +52,7 @@ const authController = {
             if(error instanceof ErrorStatus){
                 const statusCode = error.status || 500;
                 res.status(statusCode).json({ message: error.message });
-            }
-            if(error instanceof Error){
+            }else if(error instanceof Error){
                 res.status(500).json({ message: error.message });
             }
           }
@@ -67,8 +65,7 @@ const authController = {
             if(error instanceof ErrorStatus){
                 const statusCode = error.status || 500;
                 res.status(statusCode).json({ message: error.message });
-            }
-            if(error instanceof Error){
+            }else if(error instanceof Error){
                 res.status(500).json({ message: error.message });
             }
           }
